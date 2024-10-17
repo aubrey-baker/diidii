@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Capture and Upload</title>
+</head>
+<body>
+    <h1>Capture and Upload Video</h1>
+    
+    <!-- Button to open the camera -->
+    <button id="openCamera">Open Camera</button>
+    
+    <!-- Video preview -->
+    <video id="videoPreview" width="320" height="240" autoplay></video>
+    
+    <!-- Button to start recording -->
+    <button id="startRecording" style="display: none;">Start Recording</button>
+    
+    <!-- Button to stop recording -->
+    <button id="stopRecording" style="display: none;">Stop Recording</button>
+    
+    <!-- Display the recorded video -->
+    <video id="recordedVideo" width="320" height="240" controls style="display: none;"></video>
+    
+    <!-- Form to upload video -->
+    <form id="uploadForm" style="display: none;">
+        <input type="file" id="videoFile" name="videoFile" accept="video/*">
+        <button type="submit">Upload Video</button>
+    </form>
+
+    <script>
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        const openCameraButton = document.getElementById('openCamera');
+        const startRecordingButton = document.getElementById('startRecording');
+        const stopRecordingButton = document.getElementById('stopRecording');
+        const videoPreview = document.getElementById('videoPreview');
+        const recordedVideo = document.getElementById('recordedVideo');
+        const uploadForm = document.getElementById('uploadForm');
+        const videoFileInput = document.getElementById('videoFile');
+
+        // Open the camera
+        openCameraButton.addEventListener('click', async () => {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            videoPreview.srcObject = stream;
+            startRecordingButton.style.display = 'inline';
+        });
+
+        // Start recording
+        startRecordingButton.addEventListener('click', () => {
+            recordedChunks = [];
+            const stream = videoPreview.srcObject;
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = function(event) {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = function() {
+                const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+                const videoURL = URL.createObjectURL(blob);
+                recordedVideo.src = videoURL;
+                recordedVideo.style.display = 'block';
+
+                // Prepare the video for upload
+                const file = new File([blob], 'video.mp4', { type: 'video/mp4' });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                videoFileInput.files = dataTransfer.files;
+
+                uploadForm.style.display = 'block';
+            };
+
+            mediaRecorder.start();
+            stopRecordingButton.style.display = 'inline';
+            startRecordingButton.style.display = 'none';
+        });
+
+        // Stop recording
+        stopRecordingButton.addEventListener('click', () => {
+            mediaRecorder.stop();
+            stopRecordingButton.style.display = 'none';
+        });
+
+        // Handle video upload form submission
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(uploadForm);
+            const response = await fetch('/upload-video', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                alert('Video uploaded successfully!');
+            } else {
+                alert('Failed to upload video.');
+            }
+        });
+    </script>
+</body>
+</html>
+
