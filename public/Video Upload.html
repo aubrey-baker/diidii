@@ -1,0 +1,53 @@
+<!-- HTML -->
+<input type="file" id="uploadVideo" accept="video/*" style="display: none;">
+<button class="purple-btn" onclick="document.getElementById('uploadVideo').click()">Upload Video</button>
+<div id="preview"></div>
+
+<style>
+    .purple-btn {
+        background-color: #6200EA;    /* Deep purple */
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1em;
+        transition: background-color 0.3s ease;
+    }
+
+    .purple-btn:hover {
+        background-color: #7C4DFF;    /* Lighter purple on hover */
+    }
+
+    #preview {
+        margin-top: 20px;
+    }
+
+    #preview video {
+        max-width: 100%;
+        border-radius: 4px;
+    }
+</style>
+
+<script>
+    document.getElementById('uploadVideo').addEventListener('change', handleVideoUpload);
+
+    function handleVideoUpload(event) {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('video/')) {
+            const preview = document.getElementById('preview');
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.innerHTML = '';
+                const video = document.createElement('video');
+                video.src = e.target.result;
+                video.controls = true;
+                video.style.maxWidth = '100%';
+                preview.appendChild(video);
+            }
+            
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
