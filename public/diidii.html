@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>diidii Spousal Caregiver Memory Creator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1, h2 {
+            color: #4a148c;
+            text-align: center;
+        }
+        .content-area {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn {
+            display: inline-block;
+            background-color: #4a148c;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+        .tutorial {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        .tutorial img {
+            max-width: 100%;
+            height: auto;
+        }
+        #recordAudio, #recordVideo {
+            background-color: #ff4081;
+        }
+        #stopRecording {
+            background-color: #1976d2;
+            display: none;
+        }
+        #preview {
+            margin-top: 20px;
+        }
+        #preview audio, #preview video {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>diidii Spousal Caregiver Memory Creator</h1>
+
+    <div class="content-area">
+        <h2>Create Your Memory</h2>
+        <p>Welcome! Let's create a special memory together. You can record your voice, capture a video, or upload a photo.</p>
+        
+        <button id="recordAudio" class="btn">Record Audio</button>
+        <button id="recordVideo" class="btn">Record Video</button>
+        <button id="stopRecording" class="btn">Stop Recording</button>
+        <input type="file" id="uploadPhoto" accept="image/*" style="display: none;">
+        <button id="uploadPhotoBtn" class="btn">Upload Photo</button>
+        
+        <div id="preview"></div>
+
+        <div class="tutorial">
+            <h3>How to Use This Tool</h3>
+            <ol>
+                <li>Choose what type of memory you want to create: audio, video, or photo.</li>
+                <li>If recording audio or video, click the corresponding button and allow access to your microphone or camera.</li>
+                <li>Speak clearly into your microphone or position yourself in front of the camera.</li>
+                <li>When finished, click "Stop Recording".</li>
+                <li>For photos, click "Upload Photo" and select an image from your device.</li>
+                <li>Your memory will appear in the preview area below.</li>
+                <li>You can create as many memories as you like!</li>
+            </ol>
+            <img src="/api/placeholder/400/300" alt="Tutorial illustration">
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        document.getElementById('recordAudio').addEventListener('click', () => startRecording('audio'));
+        document.getElementById('recordVideo').addEventListener('click', () => startRecording('video'));
+        document.getElementById('stopRecording').addEventListener('click', stopRecording);
+        document.getElementById('uploadPhotoBtn').addEventListener('click', () => document.getElementById('uploadPhoto').click());
+        document.getElementById('uploadPhoto').addEventListener('change', handlePhotoUpload);
+
+        async function startRecording(mediaType) {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: true, 
+                video: mediaType === 'video'
+            });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+            mediaRecorder.start();
+            document.getElementById('stopRecording').style.display = 'inline-block';
+            document.getElementById('recordAudio').style.display = 'none';
+            document.getElementById('recordVideo').style.display = 'none';
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+            document.getElementById('stopRecording').style.display = 'none';
+            document.getElementById('recordAudio').style.display = 'inline-block';
+            document.getElementById('recordVideo').style.display = 'inline-block';
+            setTimeout(() => {
+                const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType });
+                const url = URL.createObjectURL(blob);
+                const preview = document.getElementById('preview');
+                const mediaElement = mediaRecorder.mimeType.startsWith('video') ? document.createElement('video') : document.createElement('audio');
+                mediaElement.src = url;
+                mediaElement.controls = true;
+                preview.innerHTML = '';
+                preview.appendChild(mediaElement);
+                recordedChunks = [];
+            }, 0);
+        }
+
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '100%';
+                    const preview = document.getElementById('preview');
+                    preview.innerHTML = '';
+                    preview.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+</html>

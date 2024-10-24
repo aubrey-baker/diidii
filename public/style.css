@@ -1,0 +1,97 @@
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&family=Shadows+Into+Light&display=swap");
+
+*{
+    margin:0;
+    padding:0;
+}
+
+/* BODY TEXT*/
+body{
+    font-family: 'Poppins';
+    text-align: center;
+}
+
+.wrapper {
+    width: 90%;
+    margin: 0 auto;
+}
+/* header background (i.e. size, color, position) */
+header {
+    width: 100%;
+    height: 100px;
+    background:rgb(149, 86, 159);
+    position: fixed;
+}
+/* LOGO position on header */
+.logo{
+    width: 30%;
+    float: left;
+    text-align: left;
+    line-height: 100px;
+}
+
+/* logo font, size, and color */
+.logo a{
+    text-decoration: none;
+    font-size: 30px;
+    font-family: 'Pacifico';
+    color: #fff;
+    letter-spacing: 5px;
+
+}
+
+/* navigation menu */
+nav{
+    float:right;
+    line-height: 100px;
+}
+
+/* style each item in menu (font, size, color) */
+nav a{
+    text-decoration:none;
+    font-family: 'Poppins';
+    letter-spacing: 5px;
+    font-size: 20px;
+    color: #fff;
+    padding: 38px 14px;
+}
+/* Change the color of links on hover */
+nav a:hover {
+    background-color: rgb(222, 222, 222);
+    color: rgb(0, 0, 0);
+    font-family: Arial, Helvetica, sans-serif;
+    
+  }
+/* Add picture banner */
+  .banner-area{
+    background-image: url(https://img.freepik.com/free-vector/aesthetic-background-vector-with-hexagons_53876-126704.jpg?t=st=1729622566~exp=1729626166~hmac=b1c256b623ba4e911540f76d7ef975141a1ad44c78584a56211a03f3b2c8817e&w=1800);
+    background-size: cover;
+    background-position: center;
+    top: 100px;
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+  }
+
+  /* Add font size, type, and position for banner-text */
+  .banner-area h2 {
+    padding-top:10%;
+    font-size: 80px;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: white;
+  }
+
+  .content-area{
+    width: 100%;
+    height:800px;
+    position: absolute;
+    background: white;
+    top: 500px;
+  }
+
+  .content-area{
+    font-size: 20px;
+    margin: 0;
+    padding-top: 30px;
+  }
