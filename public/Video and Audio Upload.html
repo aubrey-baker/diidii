@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Capture and Upload</title>
+    <style>
+        /* Add some basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .media-section {
+            margin-bottom: 40px;
+        }
+        button {
+            margin: 5px;
+        }
+        video, audio {
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Capture and Upload Media</h1>
+    
+    <!-- Video Section -->
+    <div class="media-section" id="videoSection">
+        <h2>Video</h2>
+        <button id="openCamera">Open Camera</button>
+        <video id="videoPreview" width="320" height="240" autoplay></video>
+        <button id="startRecordingVideo" style="display: none;">Start Recording</button>
+        <button id="stopRecordingVideo" style="display: none;">Stop Recording</button>
+        <video id="recordedVideo" width="320" height="240" controls style="display: none;"></video>
+        <form id="uploadVideoForm" style="display: none;">
+            <input type="file" id="videoFile" name="videoFile" accept="video/*">
+            <button type="submit">Upload Video</button>
+        </form>
+    </div>
+    
+    <!-- Audio Section -->
+    <div class="media-section" id="audioSection">
+        <h2>Audio</h2>
+        <button id="openMicrophone">Open Microphone</button>
+        <audio id="audioPreview" controls style="display: none;"></audio>
+        <button id="startRecordingAudio" style="display: none;">Start Recording</button>
+        <button id="stopRecordingAudio" style="display: none;">Stop Recording</button>
+        <audio id="recordedAudio" controls style="display: none;"></audio>
+        <form id="uploadAudioForm" style="display: none;">
+            <input type="file" id="audioFile" name="audioFile" accept="audio/*">
+            <button type="submit">Upload Audio</button>
+        </form>
+    </div>
+
+    <script>
+        // Video Recording Script
+        let mediaRecorderVideo;
+        let recordedChunksVideo = [];
+
+        const openCameraButton = document.getElementById('openCamera');
+        const startRecordingVideoButton = document.getElementById('startRecordingVideo');
+        const stopRecordingVideoButton = document.getElementById('stopRecordingVideo');
+        const videoPreview = document.getElementById('videoPreview');
+        const recordedVideo = document.getElementById('recordedVideo');
+        const uploadVideoForm = document.getElementById('uploadVideoForm');
+        const videoFileInput = document.getElementById('videoFile');
+
+        // Open the camera
+        openCameraButton.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoPreview.srcObject = stream;
+                startRecordingVideoButton.style.display = 'inline';
+            } catch (err) {
+                console.error('Error accessing camera: ', err);
+                alert('Could not access the camera.');
+            }
+        });
+
+        // Start recording video
+        startRecordingVideoButton.addEventListener('click', () => {
+            recordedChunksVideo = [];
+            const stream = videoPreview.srcObject;
+            mediaRecorderVideo = new MediaRecorder(stream);
+
+            mediaRecorderVideo.ondataavailable = function(event) {
+                if (event.data.size > 0) {
+                    recordedChunksVideo.push(event.data);
+                }
+            };
+
+            mediaRecorderVideo.onstop = function() {
+                const blob = new Blob(recordedChunksVideo, { type: 'video/mp4' });
+                const videoURL = URL.createObjectURL(blob);
+                recordedVideo.src = videoURL;
+                recordedVideo.style.display = 'block';
+
+                // Prepare the video for upload
+                const file = new File([blob], 'video.mp4', { type: 'video/mp4' });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                videoFileInput.files = dataTransfer.files;
+
+                uploadVideoForm.style.display = 'block';
+            };
+
+            mediaRecorderVideo.start();
+            stopRecordingVideoButton.style.display = 'inline';
+            startRecordingVideoButton.style.display = 'none';
+        });
+
+        // Stop recording video
+        stopRecordingVideoButton.addEventListener('click', () => {
+            mediaRecorderVideo.stop();
+            stopRecordingVideoButton.style.display = 'none';
+        });
+
+        // Handle video upload form submission
+        uploadVideoForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(uploadVideoForm);
+            const response = await fetch('/upload-video', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                alert('Video uploaded successfully!');
+            } else {
+                alert('Failed to upload video.');
+            }
+        });
+
+        // Audio Recording Script
+        let mediaRecorderAudio;
+        let recordedChunksAudio = [];
+
+        const openMicrophoneButton = document.getElementById('openMicrophone');
+        const startRecordingAudioButton = document.getElementById('startRecordingAudio');
+        const stopRecordingAudioButton = document.getElementById('stopRecordingAudio');
+        const audioPreview = document.getElementById('audioPreview');
+        const recordedAudio = document.getElementById('recordedAudio');
+        const uploadAudioForm = document.getElementById('uploadAudioForm');
+        const audioFileInput = document.getElementById('audioFile');
+
+        // Open the microphone
+        openMicrophoneButton.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioPreview.srcObject = stream;
+                audioPreview.style.display = 'block';
+                startRecordingAudioButton.style.display = 'inline';
+            } catch (err) {
+                console.error('Error accessing microphone: ', err);
+                alert('Could not access the microphone.');
+            }
+        });
+
+        // Start recording audio
+        startRecordingAudioButton.addEventListener('click', () => {
+            recordedChunksAudio = [];
+            const stream = audioPreview.srcObject;
+            mediaRecorderAudio = new MediaRecorder(stream);
+
+            mediaRecorderAudio.ondataavailable = function(event) {
+                if (event.data.size > 0) {
+                    recordedChunksAudio.push(event.data);
+                }
+            };
+
+            mediaRecorderAudio.onstop = function() {
+                const blob = new Blob(recordedChunksAudio, { type: 'audio/mp3' });
+                const audioURL = URL.createObjectURL(blob);
+                recordedAudio.src = audioURL;
+                recordedAudio.style.display = 'block';
+
+                // Prepare the audio for upload
+                const file = new File([blob], 'audio.mp3', { type: 'audio/mp3' });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                audioFileInput.files = dataTransfer.files;
+
+                uploadAudioForm.style.display = 'block';
+            };
+
+            mediaRecorderAudio.start();
+            stopRecordingAudioButton.style.display = 'inline';
+            startRecordingAudioButton.style.display = 'none';
+        });
+
+        // Stop recording audio
+        stopRecordingAudioButton.addEventListener('click', () => {
+            mediaRecorderAudio.stop();
+            stopRecordingAudioButton.style.display = 'none';
+        });
+
+        // Handle audio upload form submission
+        uploadAudioForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(uploadAudioForm);
+            const response = await fetch('/upload-audio', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                alert('Audio uploaded successfully!');
+            } else {
+                alert('Failed to upload audio.');
+            }
+        });
+    </script>
+</body>
+</html>
