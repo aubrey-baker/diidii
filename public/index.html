@@ -229,43 +229,71 @@
         const uploadVideoForm = document.getElementById('uploadVideoForm');
         const videoFileInput = document.getElementById('videoFile');
 
-        openCameraButton.addEventListener('click', async () => {
+         // Open the camera
+         openCameraButton.addEventListener('click', async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 videoPreview.srcObject = stream;
                 startRecordingVideoButton.style.display = 'inline';
             } catch (err) {
+                console.error('Error accessing camera: ', err);
                 alert('Could not access the camera.');
             }
         });
 
+        // Start recording video
         startRecordingVideoButton.addEventListener('click', () => {
-            mediaRecorderVideo = new MediaRecorder(videoPreview.srcObject);
-            mediaRecorderVideo.ondataavailable = (e) => recordedChunksVideo.push(e.data);
+            recordedChunksVideo = [];
+            const stream = videoPreview.srcObject;
+            mediaRecorderVideo = new MediaRecorder(stream);
+
+            mediaRecorderVideo.ondataavailable = function(event) {
+                if (event.data.size > 0) {
+                    recordedChunksVideo.push(event.data);
+                }
+            };
+
+            mediaRecorderVideo.onstop = function() {
+                const blob = new Blob(recordedChunksVideo, { type: 'video/mp4' });
+                const videoURL = URL.createObjectURL(blob);
+                recordedVideo.src = videoURL;
+                recordedVideo.style.display = 'block';
+
+                // Prepare the video for upload
+                const file = new File([blob], 'video.mp4', { type: 'video/mp4' });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                videoFileInput.files = dataTransfer.files;
+
+                uploadVideoForm.style.display = 'block';
+            };
+
             mediaRecorderVideo.start();
             stopRecordingVideoButton.style.display = 'inline';
             startRecordingVideoButton.style.display = 'none';
         });
 
+        // Stop recording video
         stopRecordingVideoButton.addEventListener('click', () => {
-        mediaRecorderVideo.stop();
-        stopRecordingVideoButton.style.display = 'none';
-        mediaRecorderVideo.onstop = function() {
-            const blob = new Blob(recordedChunksVideo, { type: 'video/webm' }); // Use the correct MIME type
-            const videoURL = URL.createObjectURL(blob);
-            recordedVideo.src = videoURL;
-            recordedVideo.style.display = 'block';
+            mediaRecorderVideo.stop();
+            stopRecordingVideoButton.style.display = 'none';
+        });
 
-            // Create a File from the Blob and set it in the file input element
-            const file = new File([blob], 'video.webm', { type: 'video/webm' });
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            videoFileInput.files = dataTransfer.files;
+        // Handle video upload form submission
+        uploadVideoForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(uploadVideoForm);
+            const response = await fetch('/upload-video', {
+                method: 'POST',
+                body: formData
+            });
 
-            // Now make sure the upload form is visible
-            uploadVideoForm.style.display = 'block';
-    };
-});
+            if (response.ok) {
+                alert('Video uploaded successfully!');
+            } else {
+                alert('Failed to upload video.');
+            }
+        });
         // Audio Recording
         let mediaRecorderAudio;
         let recordedChunksAudio = [];
@@ -277,33 +305,71 @@
         const recordedAudio = document.getElementById('recordedAudio');
         const audioFileInput = document.getElementById('audioFile');
 
+        // Open the microphone
         openMicrophoneButton.addEventListener('click', async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 audioPreview.srcObject = stream;
+                audioPreview.style.display = 'block';
                 startRecordingAudioButton.style.display = 'inline';
             } catch (err) {
+                console.error('Error accessing microphone: ', err);
                 alert('Could not access the microphone.');
             }
         });
 
+        // Start recording audio
         startRecordingAudioButton.addEventListener('click', () => {
-            mediaRecorderAudio = new MediaRecorder(audioPreview.srcObject);
-            mediaRecorderAudio.ondataavailable = (e) => recordedChunksAudio.push(e.data);
+            recordedChunksAudio = [];
+            const stream = audioPreview.srcObject;
+            mediaRecorderAudio = new MediaRecorder(stream);
+
+            mediaRecorderAudio.ondataavailable = function(event) {
+                if (event.data.size > 0) {
+                    recordedChunksAudio.push(event.data);
+                }
+            };
+
+            mediaRecorderAudio.onstop = function() {
+                const blob = new Blob(recordedChunksAudio, { type: 'audio/mp3' });
+                const audioURL = URL.createObjectURL(blob);
+                recordedAudio.src = audioURL;
+                recordedAudio.style.display = 'block';
+
+                // Prepare the audio for upload
+                const file = new File([blob], 'audio.mp3', { type: 'audio/mp3' });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                audioFileInput.files = dataTransfer.files;
+
+                uploadAudioForm.style.display = 'block';
+            };
+
             mediaRecorderAudio.start();
             stopRecordingAudioButton.style.display = 'inline';
             startRecordingAudioButton.style.display = 'none';
         });
 
+        // Stop recording audio
         stopRecordingAudioButton.addEventListener('click', () => {
             mediaRecorderAudio.stop();
             stopRecordingAudioButton.style.display = 'none';
-            const blob = new Blob(recordedChunksAudio, { type: 'audio/mp3' });
-            recordedAudio.src = URL.createObjectURL(blob);
-            recordedAudio.style.display = 'block';
+        });
 
+        // Handle audio upload form submission
+        uploadAudioForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(uploadAudioForm);
+            const response = await fetch('/upload-audio', {
+                method: 'POST',
+                body: formData
+            });
 
-            
+            if (response.ok) {
+                alert('Audio uploaded successfully!');
+            } else {
+                alert('Failed to upload audio.');
+            }
         });
         // Upload Image Function
         function uploadImage() {
