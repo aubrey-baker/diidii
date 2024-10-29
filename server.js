@@ -20,6 +20,9 @@ if (!fs.existsSync(audioUploadDir)){
     fs.mkdirSync(audioUploadDir);
 }
 
+
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Setup multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -71,7 +74,7 @@ app.post('/upload-audio', upload.single('audioFile'), (req, res) => {
 });
 
 // Start server
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
