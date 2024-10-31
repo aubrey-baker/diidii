@@ -8,6 +8,13 @@ const app = express();
 const uploadDir = path.join(__dirname, 'uploads');
 const videoUploadDir = path.join(uploadDir, 'videos');
 const audioUploadDir = path.join(uploadDir, 'audio');
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Create directories if they don't exist
 if (!fs.existsSync(uploadDir)){
@@ -21,7 +28,6 @@ if (!fs.existsSync(audioUploadDir)){
 }
 
 
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Setup multer for file uploads
 const storage = multer.diskStorage({
@@ -75,6 +81,6 @@ app.post('/upload-audio', upload.single('audioFile'), (req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+})
