@@ -6,6 +6,7 @@ const app = express();
 
 // Ensure the uploads directory exists
 const uploadDir = path.join(__dirname, 'uploads');
+const imageUploadDir = path.join(uploadDir, 'images');
 const videoUploadDir = path.join(uploadDir, 'videos');
 const audioUploadDir = path.join(uploadDir, 'audio');
 app.use(express.static(path.join(__dirname, 'public')));
@@ -77,6 +78,14 @@ app.post('/upload-audio', upload.single('audioFile'), (req, res) => {
         return res.status(400).send('No audio file uploaded.');
     }
     res.send('Audio uploaded successfully.');
+});
+
+// Handle image upload
+app.post('/upload-image', upload.single('imageFile'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No image file uploaded.');
+    }
+    res.send('Image uploaded successfully.');
 });
 
 // Start server
