@@ -80,38 +80,6 @@
     </div>
 
 
-
     
-
-    <script>
-        async function fetchRecommendations() {
-            const genre = document.getElementById('genre').value;
-            const apiKey = 'YOUR_LAST_FM_API_KEY'; // Replace with your Last.fm API key
-            const recommendationList = document.getElementById('recommendationList');
-            recommendationList.innerHTML = ''; // Clear previous recommendations
-
-            try {
-                // Fetch top tracks for the specified genre
-                const response = await fetch(`https://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag=${encodeURIComponent(genre)}&api_key=${apiKey}&format=json`);
-                const data = await response.json();
-
-                if (data.tracks && data.tracks.track.length > 0) {
-                    data.tracks.track.slice(0, 5).forEach(track => {
-                        const listItem = document.createElement('li');
-                        listItem.innerHTML = `<strong>Song:</strong> ${track.name} by ${track.artist.name}`;
-                        recommendationList.appendChild(listItem);
-                    });
-                    document.getElementById('recommendations').style.display = 'block';
-                } else {
-                    recommendationList.innerHTML = '<li>No recommendations available for this genre.</li>';
-                    document.getElementById('recommendations').style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Error fetching recommendations:', error);
-                recommendationList.innerHTML = '<li>There was an error fetching recommendations. Please try again later.</li>';
-                document.getElementById('recommendations').style.display = 'block';
-            }
-        }
-    </script>
 </body>
 </html>
