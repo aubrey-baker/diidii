@@ -1,0 +1,198 @@
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&family=Shadows+Into+Light&display=swap");
+
+*{
+    margin:0;
+    padding:0;
+}
+
+/* BODY TEXT*/
+body{
+    font-family: 'Poppins';
+    text-align: center;
+    background-image: url(https://png.pngtree.com/thumb_back/fw800/background/20231017/pngtree-lilac-gradient-fragment-watercolor-painting-on-canvas-with-abstract-light-purple-image_13685067.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+}
+
+.wrapper {
+    width: 90%;
+    margin: 0 auto;
+}
+/* header background (i.e. size, color, position) */
+header {
+    width: 100%;
+    height: 100px;
+    background:rgb(148, 74, 159);
+    position: fixed;
+}
+/* LOGO position on header */
+.logo{
+    width: 30%;
+    float: left;
+    text-align: left;
+    line-height: 100px;
+}
+
+/* logo font, size, and color */
+.logo a{
+    text-decoration: none;
+    font-size: 30px;
+    font-family: 'Pacifico';
+    color: #fff;
+    letter-spacing: 5px;
+
+}
+
+/* navigation menu */
+nav{
+    float:right;
+    line-height: 100px;
+}
+
+/* style each item in menu (font, size, color) */
+nav a{
+    text-decoration:none;
+    font-family: 'Poppins';
+    letter-spacing: 5px;
+    font-size: 20px;
+    color: #fff;
+    padding: 38px 14px;
+}
+/* Change the color of links on hover */
+nav a:hover {
+    background-color: rgb(222, 222, 222);
+    color: rgb(0, 0, 0);
+    font-family: Arial, Helvetica, sans-serif;
+    
+  }
+
+
+  /* WHITE BACKGROUND UNDER HEADER PICTURE*/
+  .content-area{
+    width: 100%;
+    height:800px;
+    position: absolute;
+    background: white;
+    top: 500px;
+  }
+  .content-area{
+    font-size: 20px;
+    margin: 0;
+    padding-top: 30px;
+  }
+
+  
+   /* REMINDER IMAGE VIDEO UPLOAD STYLING */
+ .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 90px; /* CONTROL HEIGHT AND LAYOUT OF BOXES */
+}
+.section {
+    background-color: #f3e5f5; /* Light purple */
+    padding: 30px;
+    
+    margin: 20px;
+    border-radius: 20px;
+    box-shadow: 0 2px 1px rgba(75, 0, 130, 0.1);
+}
+.section h2 {
+    text-align: center;
+    color: #8a09ec;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+ h3 {
+  text-align: center;
+  color: #4B0082;
+  margin-top: 2px;
+  margin-bottom: 10px;
+  font-size: 2rem;
+}
+ li {
+  list-style-type: none;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    letter-spacing: 1px;
+    font-size: 20px;
+    color: black;
+    padding: 10px 10px;
+    
+}
+.btn {
+    width: 100%;
+    padding: 5px;
+    font-size: 1.2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-primary {
+            background-color: #8A2BE2;
+            color: #ffffff;
+        }
+        .btn-success {
+            background-color: #8A2BE2;
+            color: #ffffff;
+        }
+        .btn-warning {
+            background-color: #8A2BE2;
+            color: #ffffff;
+        }
+        .btn-info {
+            background-color: #8A2BE2;
+            color: #ffffff;
+        } .btn:hover {
+          opacity: 0.9;
+      }
+      .tutorial {
+          margin-top: 40px;
+          background-color: #ffffff;
+          padding: 10px;
+          border-left: 5px solid #4B0082;
+          border-radius: 2px;
+          font-size: 1rem;
+          color: #333333;
+      }
+      .tutorial img {
+        max-width: 100%;
+        height: auto;
+    }
+  
+      .reminder {
+          background-color: lavenderblush; /* Lavender */
+          padding: 15px;
+          border-left: 5px solid #4B0082;
+          border-radius: 5px;
+          margin-bottom: 15px;
+          margin: 10px;
+          font-size: 1.1rem;
+          color: #333333;
+      }
+      footer {
+        text-align: center;
+        padding: 20px;
+        background-color: #4B0082;
+        color: #ffffff;
+        font-size: 1rem;
+    }
+    /* Responsive Design */
+    @media (max-width: 600px) {
+        .header h1 {
+            font-size: 2.5rem;
+        }
+        .header p {
+            font-size: 1rem;
+        }
+        .section h2 {
+            font-size: 1.5rem;
+        }
+        .btn {
+            font-size: 1rem;
+            padding: 12px;
+        }
+    }
