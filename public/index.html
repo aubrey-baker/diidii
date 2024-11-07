@@ -372,16 +372,46 @@
             }
         });
         // Upload Image Function
-        function uploadImage() {
-            const imageInput = document.getElementById('imageUpload');
-            if (imageInput.files.length > 0) {
-                // Implement actual upload logic here (e.g., send to server)
-                alert('Image uploaded successfully!');
-                imageInput.value = ''; // Reset the input
-            } else {
-                alert('Please select an image to upload.');
-            }
+        function triggerFileInput() {
+        document.getElementById('imageUpload').click();
+    }
+
+    document.getElementById('imageUpload').addEventListener('change', () => {
+        const imageInput = document.getElementById('imageUpload');
+        if (imageInput.files.length > 0) {
+            uploadImage(); // Automatically call uploadImage() after file selection
         }
+    });
+
+    function uploadImage() {
+        const imageInput = document.getElementById('imageUpload');
+        const formData = new FormData();
+
+        if (imageInput.files.length > 0) {
+            formData.append('imageFile', imageInput.files[0]);
+
+            fetch('/upload-image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Image uploaded successfully!');
+                } else {
+                    alert('Failed to upload image.');
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading image:', error);
+                alert('An error occurred while uploading the image.');
+            });
+
+            imageInput.value = ''; // Reset the input
+        } else {
+            alert('Please select an image to upload.');
+        }
+    }
+
 
         // Record Video Function
         function recordVideo() {
