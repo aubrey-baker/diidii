@@ -80,6 +80,19 @@
         </div>
     </div>
 
+
+
+     <!-- Take Pictures Section -->
+    <div class="section" id="take-photo">
+        <h2>Take a Photo</h2>
+        <button class="btn btn-primary" id="openCameraForPhoto" onclick="openCamera()">Open Camera</button>
+        <video id="cameraPreview" width="320" height="240" autoplay style="display: none;"></video>
+        <button class="btn btn-success" id="capturePhoto" onclick="capturePhoto()" style="display: none;">Capture Photo</button>
+        <div id="photoPreviewContainer" style="margin-top: 10px;">
+            <img id="photoPreview" alt="Photo Preview" style="display: none; max-width: 100%; border: 1px solid #ccc; border-radius: 5px;">
+        </div>
+    </div>
+
      <!-- Record Videos Section -->
      <div class="section" id="record-video">
         <h2>Record Videos</h2>
@@ -149,6 +162,46 @@
     const recordedVideo = document.getElementById('recordedVideo');
     const uploadVideoForm = document.getElementById('uploadVideoForm');
     const videoFileInput = document.getElementById('videoFile');
+
+
+    function openCamera() {
+    const video = document.getElementById('cameraPreview');
+    const captureButton = document.getElementById('capturePhoto');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            videoStream = stream;  // Save the stream to stop it later
+            video.srcObject = stream;
+            video.style.display = 'block';
+            captureButton.style.display = 'inline-block';
+        })
+        .catch(error => {
+            console.error("Error accessing the camera: ", error);
+            alert("Could not access the camera.");
+        });
+}
+
+function capturePhoto() {
+    const video = document.getElementById('cameraPreview');
+    const canvas = document.createElement('canvas');
+    const preview = document.getElementById('photoPreview');
+    
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    // Draw the video frame on the canvas to capture the image
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // Convert the canvas to a data URL and display it in the img element
+    preview.src = canvas.toDataURL('image/png');
+    preview.style.display = 'block';
+
+    // Stop the camera stream after capturing the photo
+    videoStream.getTracks().forEach(track => track.stop());
+    video.style.display = 'none';
+    document.getElementById('capturePhoto').style.display = 'none';
+}
+
 
      // Open the camera
      openCameraButton.addEventListener('click', async () => {
