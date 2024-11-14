@@ -44,9 +44,34 @@
     </div>
 
     <!-- Upload Images Section -->
+
+    
     <div class="section" id="upload">
         <h2>Upload Images</h2>
-        <input type="file" accept="image/*" class="form-control mb-3" id="imageUpload">
+        <input type="file" accept="image/*" class="btn btn-primary" id="imageUpload" multiple onchange="previewImages(event)">
+        <div id="imagePreviewContainer" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;"></div>
+        <script>
+            function previewImages(event) {
+                const files = event.target.files;
+                const previewContainer = document.getElementById('imagePreviewContainer');
+                previewContainer.innerHTML = ''; // Clear any existing previews
+            
+                Array.from(files).forEach(file => {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+            
+                        reader.onload = function(e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            previewContainer.appendChild(img);
+                        };
+            
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            </script>
+
         <button class="btn btn-primary" onclick="uploadImage()">
             <i class="fas fa-image"></i> Upload Image
         </button>

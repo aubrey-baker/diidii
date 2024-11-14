@@ -21,6 +21,21 @@ body{
     width: 90%;
     margin: 0 auto;
 }
+
+
+/*Image handeling*/
+#imagePreviewContainer img {
+    max-width: 500px;
+    height: auto;  /* Maintain aspect ratio */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    object-fit: contain;  /* Prevent cropping while maintaining aspect ratio */
+}
+
+
+
+
 /* header background (i.e. size, color, position) */
 header {
     width: 100%;
