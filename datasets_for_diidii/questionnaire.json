@@ -1,0 +1,42 @@
+[
+    {
+        "type": "single-choice",
+        "question": "What is your favorite tempo range?",
+        "options": [
+            "<100 BPM",
+            "100\u2013120 BPM",
+            ">120 BPM"
+        ]
+    },
+    {
+        "type": "multiple-choice",
+        "question": "What are your favorite genres?",
+        "options": [
+            "rock",
+            "pop",
+            "jazz",
+            "blues"
+        ]
+    },
+    {
+        "type": "single-choice",
+        "question": "Which decade of music do you enjoy the most?",
+        "options": [
+            "1920.0",
+            "1930.0",
+            "1940.0",
+            "1950.0",
+            "1960.0",
+            "1970.0",
+            "1980.0",
+            "1990.0",
+            "2000.0",
+            "2010.0"
+        ]
+    },
+    {
+        "type": "recommendation",
+        "question": "Based on your interest in rock, we recommend these tracks:",
+        "options": []
+    }
+]
