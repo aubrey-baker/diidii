@@ -3,6 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const app = express();
+app.use(express.json({ limit: '10mb' })); // Set limit for large images
 
 // Ensure the uploads directory exists
 const uploadDir = path.join(__dirname, 'uploads');
@@ -46,9 +47,9 @@ const storage = multer.diskStorage({
     }
 });
 
-// File filter to accept only video and audio files
+// File filter to accept only picture, video and audio files
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = /mp4|webm|mp3|wav/;
+    const allowedTypes = /mp4|webm|mp3|wav|jpg|jpeg|png/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
 
@@ -81,12 +82,21 @@ app.post('/upload-audio', upload.single('audioFile'), (req, res) => {
 });
 
 // Handle image upload
-app.post('/upload-image', upload.single('imageFile'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).send('No image file uploaded.');
-    }
-    res.send('Image uploaded successfully.');
+app.post('/upload-photo', (req, res) => {
+    const { image } = req.body;
+    const base64Data = image.replace(/^data:image\/png;base64,/, "");
+    const filePath = path.join(__dirname, 'uploads/pictures', `photo_${Date.now()}.png`);
+
+    fs.writeFile(filePath, base64Data, 'base64', err => {
+        if (err) {
+            console.error('Error saving photo:', err);
+            return res.status(500).send('Error saving photo');
+        }
+        res.status(200).send('Photo uploaded successfully');
+    });
 });
+
+
 
 // Start server
 const PORT = process.env.PORT || 3000;

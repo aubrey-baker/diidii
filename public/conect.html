@@ -83,15 +83,19 @@
 
 
      <!-- Take Pictures Section -->
-    <div class="section" id="take-photo">
+     <div class="section" id="take-photo">
         <h2>Take a Photo</h2>
         <button class="btn btn-primary" id="openCameraForPhoto" onclick="openCamera()">Open Camera</button>
         <video id="cameraPreview" width="320" height="240" autoplay style="display: none;"></video>
         <button class="btn btn-success" id="capturePhoto" onclick="capturePhoto()" style="display: none;">Capture Photo</button>
+        
+        <!-- Photo preview and upload button -->
         <div id="photoPreviewContainer" style="margin-top: 10px;">
             <img id="photoPreview" alt="Photo Preview" style="display: none; max-width: 100%; border: 1px solid #ccc; border-radius: 5px;">
+            <button class="btn btn-primary" id="uploadPhoto" onclick="uploadPhoto()" style="display: none;">Upload Photo</button>
         </div>
     </div>
+    
 
      <!-- Record Videos Section -->
      <div class="section" id="record-video">
@@ -188,18 +192,31 @@ function capturePhoto() {
     
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-
-    // Draw the video frame on the canvas to capture the image
     canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
     
-    // Convert the canvas to a data URL and display it in the img element
     preview.src = canvas.toDataURL('image/png');
     preview.style.display = 'block';
-
-    // Stop the camera stream after capturing the photo
+    
     videoStream.getTracks().forEach(track => track.stop());
     video.style.display = 'none';
     document.getElementById('capturePhoto').style.display = 'none';
+
+    // Show the upload button
+    document.getElementById('uploadPhoto').style.display = 'inline-block';
+}
+function uploadPhoto() {
+    const photoPreview = document.getElementById('photoPreview');
+    const dataUrl = photoPreview.src;
+
+    fetch('/upload-photo', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ image: dataUrl })
+    })
+    .then(response => response.ok ? alert('Photo uploaded successfully!') : alert('Failed to upload photo.'))
+    .catch(error => console.error('Error uploading photo:', error));
 }
 
 
