@@ -24,8 +24,6 @@
          </div>
     </body>
 
-    <body1>
-
    <!-- Main Content Container -->
    <div class="container">
 
@@ -93,13 +91,13 @@
      <div class="section" id="reminders">
         <h2>Reminders</h2>
         <div class="reminder">
-            <p>Don't forget to take your daily pictures! 📸</p>
+            <p id="reminder-message"></p>
         </div>
         <button class="btn btn-info" onclick="setReminder()">
             <i class="fas fa-bell"></i> Set Reminder
         </button>
         <div class="tutorial">
-            <strong>How to Set Reminders:</strong> Click the "Set Reminder" button to receive daily notifications.
+            <strong>Want to Set Up Reminders:</strong> Click the "Set Reminder" button to receive daily notifications.
         </div>
     </div>
 </div>
@@ -124,6 +122,16 @@
     const recordedVideo = document.getElementById('recordedVideo');
     const uploadVideoForm = document.getElementById('uploadVideoForm');
     const videoFileInput = document.getElementById('videoFile');
+    const reminderMessages = [
+        "Create a new playlist today! 🎶",
+        "Don't forget to take your daily pictures! 📸",
+        "Upload a video of something you love. 📹",
+        "Capture a picture of something that makes you happy. 😊",
+        "Reminder to add a song to your playlist! 🎵",
+        "Share a memory with a loved one. ❤️",
+        "Take a moment to appreciate the beauty around you. 🌳",
+        "Record a short video of a funny moment. 😂"
+    ];    
 
      // Open the camera
      openCameraButton.addEventListener('click', async () => {
@@ -316,6 +324,14 @@
     function scheduleReminder() {
         // Simple reminder using setTimeout (for demonstration)
         // In a real app, you'd use more robust scheduling, possibly with a backend
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0-6 (Sunday-Saturday)
+        const messageIndex = dayOfWeek % reminderMessages.length;
+        const reminderMessage = reminderMessages[messageIndex];
+
+        const reminderElement = document.getElementById('reminder-message');
+        reminderElement.textContent = reminderMessage;    
+                
         alert('Reminder set! You will receive a notification in 5 seconds.');
         setTimeout(() => {
             new Notification('Reminder', {
@@ -324,17 +340,6 @@
             });
         }, 5000);
     }
-
-    // Request Notification Permission on Page Load
-    document.addEventListener('DOMContentLoaded', () => {
-        if ('Notification' in window && Notification.permission !== 'granted') {
-            Notification.requestPermission();
-        }
-    });
-</script>
-</body1>
-
-
-     
-
-
+    </script>
+</body>
+</html>
