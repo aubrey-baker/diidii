@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Scanner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        video, canvas {
+            max-width: 100%;
+            margin: 10px 0;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Photo Scanner</h1>
+    <p>Scan your physical photos and convert them into digital images.</p>
+
+    <!-- Video feed -->
+    <video id="video" autoplay playsinline></video>
+
+    <!-- Capture button -->
+    <div class="controls">
+        <button id="captureBtn">Capture Photo</button>
+    </div>
+
+    <!-- Canvas to show captured image -->
+    <canvas id="canvas" style="display:none;"></canvas>
+    <div id="output"></div>
+
+    <!-- JavaScript -->
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const output = document.getElementById('output');
+        const captureBtn = document.getElementById('captureBtn');
+        const context = canvas.getContext('2d');
+
+        // Access the user's webcam
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (error) {
+                console.error("Error accessing webcam:", error);
+                alert("Could not access the webcam. Please check your browser settings.");
+            }
+        }
+
+        // Capture a frame from the video feed
+        captureBtn.addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Show the captured image
+            const imgData = canvas.toDataURL('image/png');
+            displayCapturedImage(imgData);
+        });
+
+        // Display the captured image and allow cropping
+        function displayCapturedImage(imgData) {
+            output.innerHTML = `
+                <h3>Captured Image</h3>
+                <img id="capturedImg" src="${imgData}" style="max-width: 100%; border: 1px solid #ddd;">
+                <div class="controls">
+                    <button id="cropBtn">Crop Image</button>
+                </div>
+            `;
+
+            // Add event listener for cropping functionality
+            const cropBtn = document.getElementById('cropBtn');
+            cropBtn.addEventListener('click', () => cropImage());
+        }
+
+        // Simulate cropping the image (placeholder functionality)
+        function cropImage() {
+            const capturedImg = document.getElementById('capturedImg');
+            const cropCanvas = document.createElement('canvas');
+            const cropContext = cropCanvas.getContext('2d');
+
+            // Define crop area (example: central crop)
+            const cropWidth = capturedImg.width / 2;
+            const cropHeight = capturedImg.height / 2;
+            const startX = capturedImg.width / 4;
+            const startY = capturedImg.height / 4;
+
+            cropCanvas.width = cropWidth;
+            cropCanvas.height = cropHeight;
+
+            const img = new Image();
+            img.src = capturedImg.src;
+            img.onload = () => {
+                cropContext.drawImage(img, startX, startY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+                output.innerHTML = `
+                    <h3>Cropped Image</h3>
+                    <img src="${cropCanvas.toDataURL('image/png')}" style="max-width: 100%; border: 1px solid #ddd;">
+                `;
+            };
+        }
+
+        // Start the webcam on page load
+        window.onload = startCamera;
+    </script>
+</body>
+</html>
