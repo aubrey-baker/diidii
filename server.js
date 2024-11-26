@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const db = require('./database'); // Import the database module
 const app = express();
 app.use(express.json({ limit: '10mb' })); // Set limit for large images
 
@@ -11,8 +12,6 @@ const imageUploadDir = path.join(uploadDir, 'images');
 const videoUploadDir = path.join(uploadDir, 'videos');
 const audioUploadDir = path.join(uploadDir, 'audio');
 app.use(express.static(path.join(__dirname, 'public')));
-
-
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -75,24 +74,6 @@ app.post('/upload-photo', (req, res) => {
     });
 });
 
-
-// File filter to accept only picture, video and audio files
-const fileFilter = (req, file, cb) => {
-    const allowedTypes = /mp4|webm|mp3|wav|jpg|jpeg|png/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-
-    if (extname && mimetype) {
-        cb(null, true);
-    } else {
-        cb('Error: Only video and audio files are allowed!');
-    }
-};
-
-
-// Serve static files (HTML, CSS, JS)
-app.use(express.static('public'));
-
 // Handle video upload
 app.post('/upload-video', upload.single('videoFile'), (req, res) => {
     if (!req.file) {
@@ -109,33 +90,26 @@ app.post('/upload-audio', upload.single('audioFile'), (req, res) => {
     res.send('Audio uploaded successfully.');
 });
 
-// Handle image upload
-app.post('/upload-photo', (req, res) => {
-    const { image } = req.body;
-    const base64Data = image.replace(/^data:image\/png;base64,/, "");
-    const filePath = path.join(__dirname, 'uploads/pictures', `photo_${Date.now()}.png`);
+// Handle login requests
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
 
-    fs.writeFile(filePath, base64Data, 'base64', err => {
+    db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, row) => {
         if (err) {
-            console.error('Error saving photo:', err);
-            return res.status(500).send('Error saving photo');
+            console.error('Error querying database:', err);
+            return res.status(500).send('Internal server error');
         }
-        res.status(200).send('Photo uploaded successfully');
+
+        if (row) {
+            res.status(200).send('Login successful');
+        } else {
+            res.status(401).send('Invalid username or password');
+        }
     });
 });
-
-
-app.post('/upload-images', upload.array('image', 10), (req, res) => {
-    if (!req.files) {
-        return res.status(400).send('No files were uploaded.');
-    }
-    res.status(200).send('Images uploaded successfully');
-});
-
-
 
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
-})
+});
