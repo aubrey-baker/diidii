@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styleH.css">
+    <title>Memories</title>
+    <style>
+        .memory-item {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="topnav">
+        <header>
+            <div class="wrapper">
+                <div class="logo">
+                    <a href="#">Welcome to diidii</a>
+                </div>
+                <nav>
+                    <a href="help.html">Help</a>
+                    <a href="conect.html">Upload</a>
+                    <a href="index.html">Home</a>
+                    <a href="login.html">Login</a>
+                    <a href="memories.html">Memories</a> <!-- Added Memories tab -->
+                </nav>
+            </div>
+        </header>
+    </div>
+
+    <div class="content-area">
+        <div class="wrapper">
+            <h2>Your Memories</h2>
+            <div id="memories"></div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 Diidii App. All rights reserved.
+    </footer>
+
+    <script>
+        async function fetchMemories() {
+            const username = 'your-username'; // Replace with the actual username
+            const response = await fetch(`/user-files/${username}`);
+            const files = await response.json();
+
+            const memoriesContainer = document.getElementById('memories');
+            files.forEach(file => {
+                const memoryItem = document.createElement('div');
+                memoryItem.className = 'memory-item';
+                if (file.type === 'images') {
+                    const img = document.createElement('img');
+                    img.src = `/uploads/${username}/${file.path}`;
+                    img.alt = file.name;
+                    img.style.maxWidth = '100%';
+                    memoryItem.appendChild(img);
+                } else if (file.type === 'videos') {
+                    const video = document.createElement('video');
+                    video.src = `/uploads/${username}/${file.path}`;
+                    video.controls = true;
+                    video.style.maxWidth = '100%';
+                    memoryItem.appendChild(video);
+                } else if (file.type === 'audio') {
+                    const audio = document.createElement('audio');
+                    audio.src = `/uploads/${username}/${file.path}`;
+                    audio.controls = true;
+                    memoryItem.appendChild(audio);
+                }
+                memoriesContainer.appendChild(memoryItem);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchMemories);
+    </script>
+</body>
+</html>

@@ -2,39 +2,40 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const session = require('express-session');
 const db = require('./database'); // Import the database module
 const app = express();
 app.use(express.json({ limit: '10mb' })); // Set limit for large images
 
+// Set up session middleware
+app.use(session({
+    secret: 'your-secret-key', // Replace with a strong secret key
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS
+}));
+
 // Ensure the uploads directory exists
 const uploadDir = path.join(__dirname, 'uploads');
-const imageUploadDir = path.join(uploadDir, 'images');
-const videoUploadDir = path.join(uploadDir, 'videos');
-const audioUploadDir = path.join(uploadDir, 'audio');
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.get('/memories.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'memories.html'));
+});
+
 // Create directories if they don't exist
 if (!fs.existsSync(uploadDir)){
     fs.mkdirSync(uploadDir);
-}
-if (!fs.existsSync(imageUploadDir)){
-    fs.mkdirSync(imageUploadDir);
-}
-if (!fs.existsSync(videoUploadDir)){
-    fs.mkdirSync(videoUploadDir);
-}
-if (!fs.existsSync(audioUploadDir)){
-    fs.mkdirSync(audioUploadDir);
 }
 
 // Setup multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const username = req.body.username;
+        const username = req.session.username;
         const userDir = path.join(uploadDir, username);
 
         // Create user directory if it doesn't exist
@@ -81,7 +82,8 @@ app.post('/upload-images', upload.array('image', 10), (req, res) => {
 
 // Route for handling captured photo upload from "Take a Photo" section
 app.post('/upload-photo', (req, res) => {
-    const { username, image } = req.body;
+    const { image } = req.body;
+    const username = req.session.username;
     const base64Data = image.replace(/^data:image\/png;base64,/, "");
     const userDir = path.join(uploadDir, username, 'images');
 
@@ -117,6 +119,30 @@ app.post('/upload-audio', upload.single('audioFile'), (req, res) => {
     res.send('Audio uploaded successfully.');
 });
 
+// Route to fetch user-specific files
+app.get('/user-files', (req, res) => {
+    const username = req.session.username;
+    const userDir = path.join(uploadDir, username);
+
+    if (!fs.existsSync(userDir)) {
+        return res.status(404).send('User directory not found');
+    }
+
+    const files = [];
+    const subDirs = ['images', 'videos', 'audio'];
+
+    subDirs.forEach(subDir => {
+        const subDirPath = path.join(userDir, subDir);
+        if (fs.existsSync(subDirPath)) {
+            fs.readdirSync(subDirPath).forEach(file => {
+                files.push({ type: subDir, name: file, path: path.join(subDir, file) });
+            });
+        }
+    });
+
+    res.json(files);
+});
+
 // Handle login requests
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
@@ -128,11 +154,21 @@ app.post('/login', (req, res) => {
         }
 
         if (row) {
+            req.session.username = username; // Store username in session
             res.status(200).send('Login successful');
         } else {
             res.status(401).send('Invalid username or password');
         }
     });
+});
+
+// Route to check if the user is logged in
+app.get('/check-login', (req, res) => {
+    if (req.session.username) {
+        res.json({ loggedIn: true, username: req.session.username });
+    } else {
+        res.json({ loggedIn: false });
+    }
 });
 
 // Start server
