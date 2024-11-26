@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <link rel="stylesheet" href="style.css">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="style.css">
 
 
 
@@ -12,10 +11,7 @@
             <header> 
                 <div class = "wrapper">
                     <div class = "logo"> 
-                        <div id = "logo-img">
-                            <img src = "logo_square-removebg-preview.png">
-                        </div>
-                        
+                        <a href = "#">Welcome to diidii</a>
                     </div>
 
                     <nav>
@@ -51,10 +47,7 @@
 
     
     <div class="section" id="upload">
-        <h2>Upload Images <p> <i class="material-icons md-18"></i></p></h2>
-        
-
-        
+        <h2>Upload Images</h2>
         <input type="file" accept="image/*" class="btn btn-primary" id="imageUpload" multiple onchange="previewImages(event)">
         <div id="imagePreviewContainer" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;"></div>
         <script>
@@ -100,10 +93,8 @@
         <div id="photoPreviewContainer" style="margin-top: 10px;">
             <img id="photoPreview" alt="Photo Preview" style="display: none; max-width: 100%; border: 1px solid #ccc; border-radius: 5px;">
             <button class="btn btn-primary" id="uploadPhoto" onclick="uploadPhoto()" style="display: none;">Upload Photo</button>
-            <div class="tutorial">
-                <strong>How to Take Picture:</strong> Open Camera and Capture Yourself.
-            </div>
-       </div></div>
+        </div>
+    </div>
     
 
      <!-- Record Videos Section -->
@@ -120,9 +111,7 @@
             <input type="file" id="videoFile" name="videoFile" accept="video/*">
             <button type="submit" class="btn btn-primary">Upload Video</button>
         </form>
-        <div class="tutorial">
-            <strong>How to Record Video:</strong> Open Camera, Start Recording, express yourself, and stop recording.
-    </div>
+        <div class="tutorial">...</div>
     </div>
 
      <!-- Record Audio Section -->
@@ -139,16 +128,14 @@
             <input type="file" id="audioFile" name="audioFile" accept="audio/*">
             <button type="submit" class="btn btn-primary">Upload Audio</button>
         </form>
-        <div class="tutorial">
-            <strong>How to Record Audio:</strong> Open Microphone, Start Recording, say something, and stop recording.
-        </div>
+        <div class="tutorial">...</div>
     </div>
 
      <!-- Reminders Section -->
      <div class="section" id="reminders">
         <h2>Reminders</h2>
         <div class="reminder">
-            <p>Don't forget to take your daily pictures! </p>
+            <p>Don't forget to take your daily pictures! 📸</p>
         </div>
         <button class="btn btn-info" onclick="setReminder()">
             <i class="fas fa-bell"></i> Set Reminder

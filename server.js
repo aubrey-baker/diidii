@@ -21,6 +21,9 @@ app.get('/', (req, res) => {
 if (!fs.existsSync(uploadDir)){
     fs.mkdirSync(uploadDir);
 }
+if (!fs.existsSync(imageUploadDir)){
+    fs.mkdirSync(imageUploadDir);
+}
 if (!fs.existsSync(videoUploadDir)){
     fs.mkdirSync(videoUploadDir);
 }
@@ -31,19 +34,36 @@ if (!fs.existsSync(audioUploadDir)){
 // Setup multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        // Store files based on their type (video, audio, or image)
-        if (file.mimetype.startsWith('video/')) {
-            cb(null, videoUploadDir);
-        } else if (file.mimetype.startsWith('audio/')) {
-            cb(null, audioUploadDir);
-        } else if (file.mimetype.startsWith('image/')) {
-            cb(null, imageUploadDir);
-        } else {
-            cb(new Error('Unsupported file type'), null);
+        const username = req.body.username;
+        const userDir = path.join(uploadDir, username);
+
+        // Create user directory if it doesn't exist
+        if (!fs.existsSync(userDir)){
+            fs.mkdirSync(userDir);
         }
+
+        // Determine the subdirectory based on file type
+        let subDir;
+        if (file.mimetype.startsWith('image/')) {
+            subDir = 'images';
+        } else if (file.mimetype.startsWith('video/')) {
+            subDir = 'videos';
+        } else if (file.mimetype.startsWith('audio/')) {
+            subDir = 'audio';
+        } else {
+            return cb(new Error('Unsupported file type'), null);
+        }
+
+        const uploadPath = path.join(userDir, subDir);
+
+        // Create subdirectory if it doesn't exist
+        if (!fs.existsSync(uploadPath)){
+            fs.mkdirSync(uploadPath);
+        }
+
+        cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
-        // Generate unique filenames
         cb(null, Date.now() + path.extname(file.originalname));
     }
 });
@@ -61,9 +81,16 @@ app.post('/upload-images', upload.array('image', 10), (req, res) => {
 
 // Route for handling captured photo upload from "Take a Photo" section
 app.post('/upload-photo', (req, res) => {
-    const { image } = req.body;
+    const { username, image } = req.body;
     const base64Data = image.replace(/^data:image\/png;base64,/, "");
-    const filePath = path.join(imageUploadDir, `photo_${Date.now()}.png`);
+    const userDir = path.join(uploadDir, username, 'images');
+
+    // Create user directory if it doesn't exist
+    if (!fs.existsSync(userDir)){
+        fs.mkdirSync(userDir, { recursive: true });
+    }
+
+    const filePath = path.join(userDir, `photo_${Date.now()}.png`);
 
     fs.writeFile(filePath, base64Data, 'base64', err => {
         if (err) {

@@ -25,24 +25,18 @@ header {
     height: 100px;
     background:rgb(148, 74, 159);
     position: fixed;
+    top: 0px;
 }
+
 /* LOGO position on header */
-.logo{
-    width: 30%;
-    float: left;
-    text-align: left;
-    line-height: 100px;
-}
-
-/* logo font, size, and color */
-.logo a{
-    text-decoration: none;
-    font-size: 30px;
-    font-family: 'Montserrat';
-    color: #fff;
-    letter-spacing: 5px;
-
-}
+.logo img{
+   
+     float: left;
+    height: 130px;
+    width: 130px;
+    background: none;
+ }
+ 
 
 /* navigation menu */
 nav{
@@ -51,13 +45,14 @@ nav{
 }
 
 /* style each item in menu (font, size, color) */
+/* style each item in menu (font, size, color) */
 nav a{
-    text-decoration:none;
-    font-family: 'Montserrat';
-    letter-spacing: 5px;
-    font-size: 25px;
-    color: #fff;
-    padding: 38px 16px;
+  text-decoration:none;
+  font-family: 'Montserrat';
+  letter-spacing: 5px;
+  font-size: 25px;
+  color: #fff;
+  padding: 28px 14px;
 }
 /* Change the color of links on hover */
 nav a:hover {
@@ -94,8 +89,9 @@ nav a:hover {
   }
   .content-area h2{
     font-size: 40px;
-    font-family:'Montserrat';
-    color: rgb(27, 27, 27);
+    font-family: 'Montserrat';
+  
+    color: rgb(175, 111, 176);
     padding-top:45px;
     padding-bottom: 20px;
   }
@@ -103,7 +99,7 @@ nav a:hover {
 
   .picture-area {
     width: 100%;
-    height:540px;
+    height:400px;
     position: absolute;
     background-image: url(https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQp9NOw0DLtUZXFYBihUFN2wVXEkZtXV1WikN2mC8Sk-9XRgC7O);
     background-size: cover;
@@ -117,7 +113,7 @@ nav a:hover {
     font-size: 23px;
     font-family:'Montserrat';
     color: rgb(27, 27, 27);
-    padding-top: 30px;
+    padding-top: 36px;
   }
 
   .picture-area p1 {
@@ -126,11 +122,11 @@ nav a:hover {
   }
 
   .picture-area h4 {
-    font-size: 1.8em;
+    font-size: 2.3em;
     font-family: 'Montserrat';
     color: white;
    text-align: center;
-   padding-top: 12px;
+   padding-top: 2px;
    
   }
   
@@ -155,8 +151,8 @@ nav a:hover {
 }
 
 .background-area p{
-  font-family: 'Montserrat', sans-serif;
-  color: #333333;
+  font-family: 'Montserrat';
+  color: solid black;
   line-height: 1.6;
   font-size: 25px;
   max-width: 70%;
@@ -165,7 +161,7 @@ nav a:hover {
 .background-area h1{
   font-size: 40px;
   font-family:'Montserrat';
-  color: rgb(27, 27, 27);
+  color: rgb(32, 32, 32);
   padding-top:25px;
 }
 

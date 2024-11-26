@@ -1,294 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styleH.css">
-    <title>Diidii App</title>
-</head>
-<body>
-    <div class="topnav">
-        <header>
-            <div class="wrapper">
-                <div class="logo">
-                    <a href="#">Welcome to diidii</a>
+<link rel="stylesheet" href="styleH.css">
+<!-- Header Menu of the Page -->
+
+    <!-- Top header menu containing logo and Navigation bar a href="#default" class="logo">CompanyLogo</a>--> 
+        <!-- Navigation Menu --> 
+              
+        <div class="topnav">
+            <header> 
+                <div class = "wrapper">
+                    <div class = "logo"> 
+                        <div id = "logo-img">
+                            <img src = "logo_square-removebg-preview.png">
+                        </div>
+                        
+                    </div>
+
+                    <nav>
+                        <a href="help.html">Help</a>
+                        <a href="conect.html">Upload</a>
+                        <a href="index.html">Home</a>
+                    </nav>
                 </div>
-                <nav>
-                    <a href="help.html">Help</a>
-                    <a href="conect.html">Upload</a>
-                    <a href="index.html">Home</a>
-                    <a href="login.html">Login</a> <!-- Added Login tab -->
-                </nav>
+            </header>
+    <!-- Top header menu containing logo and Navigation bar a href="#default" class="logo">CompanyLogo</a>--> 
+        <!-- Navigation Menu -->
+           
+
+            <div class = "banner-area">
+                <h2> Create Your Memory</h2>
             </div>
-        </header>
-    </div>
+            <div class = "content-area">
+                    <h2> Hello! Let's create a special memory together.</h2>
+                <div class="row">
+                    <div class="column">
+                      <img src="https://img.freepik.com/premium-vector/video-camera-icon-isolated-white-background-vector-illustration_736051-747.jpg" alt="vid" style="width:100%">
+                    </div>
+                    <div class="column">
+                      <img src="https://static.vecteezy.com/system/resources/thumbnails/000/420/512/small/Multimedia__28138_29.jpg" alt="Audio" style="width:100%">
+                    </div>
+                    <div class="column">
+                      <img src="https://www.shutterstock.com/image-vector/camera-vector-icon-photo-line-600nw-1044036295.jpg" alt="cam" style="width:100%">
+                    </div>
 
-    <div class="banner-area">
-        <h2>Create Your Memory</h2>
-    </div>
-    <div class="content-area">
-        <div class="wrapper">
-            <h2>Hello! Let's create a special memory together.</h2>
-        </div>
-        <div class="row">
-            <div class="column">
-                <img src="https://img.freepik.com/premium-vector/video-camera-icon-isolated-white-background-vector-illustration_736051-747.jpg" alt="vid" style="width:100%">
+                </div>
             </div>
-            <div class="column">
-                <img src="https://static.vecteezy.com/system/resources/thumbnails/000/420/512/small/Multimedia__28138_29.jpg" alt="Audio" style="width:100%">
+
+            <div class = "picture-area">
+                <div class = "wrapper"> 
+                     <h4> Reminisce, <br> </h4> <p1> We encourage all users to create videos or voice recordings about your treasured life memories.</p1>
+                     <h4>Socialize, <br> </h4>  <p1> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  We explain how to set up simple methods for connecting with family members who can contribute memories  or share video/audio messages via the diidii app.  </p1>
+                     <h4> & Relax with Music Suggestions! </h4> <p1>  We suggest ways to build playlists of songs from your early year together.</p1>
+                    </div>
+                    
+
+            <div class = "background-area">
+                <div class = "wrapper">
+                       <h1>Need a moment to capture your memories? </h1> 
+                        <p> Navigate to the Connect Page where you can record your voice, capture a precious video, or upload a photo of your loved ones. <br> </p>
+                        <h2><br> Need some help with our tools? </h2>
+                       <p> You can find detailed tutorial illustrations for each tool we offer in the Help Page.</p>
+                </div>
             </div>
-            <div class="column">
-                <img src="https://www.shutterstock.com/image-vector/camera-vector-icon-photo-line-600nw-1044036295.jpg" alt="cam" style="width:100%">
-            </div>
-        </div>
-    </div>
-    <br>
-    <div class="picture-area">
-        <div class="wrapper">
-            <h4>Reminisce, <br></h4>
-            <p1>We encourage all users to create videos or voice recordings about your treasured life memories.</p1>
-            <h4>Socialize, <br></h4>
-            <p1>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; We explain how to set up simple methods for connecting with family members who can contribute memories or share video/audio messages via the diidii app.</p1>
-            <h4>& Relax with Music Suggestions!</h4>
-            <p1>We suggest ways to build playlists of songs from your early year together.</p1>
-        </div>
-    </div>
-    <div class="background-area">
-        <div class="wrapper">
-            <h1>Need a moment to capture your memories?</h1>
-            <p>Navigate to the Connect Page where you can record your voice, capture a precious video, or upload a photo of your loved ones.<br></p>
-            <h2><br>Need some help with our tools?</h2>
-            <p>You can find detailed tutorial illustrations for each tool we offer in the Help Page.</p>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer>
-        &copy; 2024 Diidii App. All rights reserved.
-    </footer>
-
-    <!-- Font Awesome JS (for icons) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js" integrity="sha512-Fo3rlrZj/k7ujTTXJNkl/6kB1e+BYEuN2e4rTk0Y6M8A/4XV1Ji5S+5hrXnZpN8XTvUPhA5oYgL+KUxVh3v3Og==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!-- Custom JavaScript -->
-    <script>
-
-        let mediaRecorderVideo;
-        let recordedChunksVideo = [];
-
-        const openCameraButton = document.getElementById('openCamera');
-        const startRecordingVideoButton = document.getElementById('startRecordingVideo');
-        const stopRecordingVideoButton = document.getElementById('stopRecordingVideo');
-        const videoPreview = document.getElementById('videoPreview');
-        const recordedVideo = document.getElementById('recordedVideo');
-        const uploadVideoForm = document.getElementById('uploadVideoForm');
-        const videoFileInput = document.getElementById('videoFile');
-
-         // Open the camera
-         openCameraButton.addEventListener('click', async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                videoPreview.srcObject = stream;
-                startRecordingVideoButton.style.display = 'inline';
-            } catch (err) {
-                console.error('Error accessing camera: ', err);
-                alert('Could not access the camera.');
-            }
-        });
-
-        // Start recording video
-        startRecordingVideoButton.addEventListener('click', () => {
-            recordedChunksVideo = [];
-            const stream = videoPreview.srcObject;
-            mediaRecorderVideo = new MediaRecorder(stream);
-
-            mediaRecorderVideo.ondataavailable = function(event) {
-                if (event.data.size > 0) {
-                    recordedChunksVideo.push(event.data);
-                }
-            };
-
-            mediaRecorderVideo.onstop = function() {
-                const blob = new Blob(recordedChunksVideo, { type: 'video/mp4' });
-                const videoURL = URL.createObjectURL(blob);
-                recordedVideo.src = videoURL;
-                recordedVideo.style.display = 'block';
-
-                // Prepare the video for upload
-                const file = new File([blob], 'video.mp4', { type: 'video/mp4' });
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                videoFileInput.files = dataTransfer.files;
-
-                uploadVideoForm.style.display = 'block';
-            };
-
-            mediaRecorderVideo.start();
-            stopRecordingVideoButton.style.display = 'inline';
-            startRecordingVideoButton.style.display = 'none';
-        });
-
-        // Stop recording video
-        stopRecordingVideoButton.addEventListener('click', () => {
-            mediaRecorderVideo.stop();
-            stopRecordingVideoButton.style.display = 'none';
-        });
-
-        // Handle video upload form submission
-        uploadVideoForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(uploadVideoForm);
-            const response = await fetch('/upload-video', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                alert('Video uploaded successfully!');
-            } else {
-                alert('Failed to upload video.');
-            }
-        });
-        // Audio Recording
-        let mediaRecorderAudio;
-        let recordedChunksAudio = [];
-
-        const openMicrophoneButton = document.getElementById('openMicrophone');
-        const startRecordingAudioButton = document.getElementById('startRecordingAudio');
-        const stopRecordingAudioButton = document.getElementById('stopRecordingAudio');
-        const audioPreview = document.getElementById('audioPreview');
-        const recordedAudio = document.getElementById('recordedAudio');
-        const audioFileInput = document.getElementById('audioFile');
-
-        // Open the microphone
-        openMicrophoneButton.addEventListener('click', async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                audioPreview.srcObject = stream;
-                audioPreview.style.display = 'block';
-                startRecordingAudioButton.style.display = 'inline';
-            } catch (err) {
-                console.error('Error accessing microphone: ', err);
-                alert('Could not access the microphone.');
-            }
-        });
-
-        // Start recording audio
-        startRecordingAudioButton.addEventListener('click', () => {
-            recordedChunksAudio = [];
-            const stream = audioPreview.srcObject;
-            mediaRecorderAudio = new MediaRecorder(stream);
-
-            mediaRecorderAudio.ondataavailable = function(event) {
-                if (event.data.size > 0) {
-                    recordedChunksAudio.push(event.data);
-                }
-            };
-
-            mediaRecorderAudio.onstop = function() {
-                const blob = new Blob(recordedChunksAudio, { type: 'audio/mp3' });
-                const audioURL = URL.createObjectURL(blob);
-                recordedAudio.src = audioURL;
-                recordedAudio.style.display = 'block';
-
-                // Prepare the audio for upload
-                const file = new File([blob], 'audio.mp3', { type: 'audio/mp3' });
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                audioFileInput.files = dataTransfer.files;
-
-                uploadAudioForm.style.display = 'block';
-            };
-
-            mediaRecorderAudio.start();
-            stopRecordingAudioButton.style.display = 'inline';
-            startRecordingAudioButton.style.display = 'none';
-        });
-
-        // Stop recording audio
-        stopRecordingAudioButton.addEventListener('click', () => {
-            mediaRecorderAudio.stop();
-            stopRecordingAudioButton.style.display = 'none';
-        });
-
-        // Handle audio upload form submission
-        uploadAudioForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(uploadAudioForm);
-            const response = await fetch('/upload-audio', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                alert('Audio uploaded successfully!');
-            } else {
-                alert('Failed to upload audio.');
-            }
-        });
-        // Upload Image Function
-        function uploadImage() {
-            const imageInput = document.getElementById('imageUpload');
-            if (imageInput.files.length > 0) {
-                // Implement actual upload logic here (e.g., send to server)
-                alert('Image uploaded successfully!');
-                imageInput.value = ''; // Reset the input
-            } else {
-                alert('Please select an image to upload.');
-            }
-        }
-
-        // Record Video Function
-        function recordVideo() {
-            // Implement actual video recording functionality using MediaRecorder API
-            alert('Video recording feature is under development.');
-        }
-
-        // Record Audio Function
-        function recordAudio() {
-            // Implement actual audio recording functionality using MediaRecorder API
-            alert('Audio recording feature is under development.');
-        }
-
-        // Set Reminder Function
-        function setReminder() {
-            if (!('Notification' in window)) {
-                alert('This browser does not support desktop notifications.');
-                return;
-            }
-
-            if (Notification.permission === 'granted') {
-                scheduleReminder();
-            } else if (Notification.permission !== 'denied') {
-                Notification.requestPermission().then(permission => {
-                    if (permission === 'granted') {
-                        scheduleReminder();
-                    } else {
-                        alert('Permission denied for notifications.');
-                    }
-                });
-            } else {
-                alert('You have blocked notifications.');
-            }
-        }
-
-        function scheduleReminder() {
-            // Simple reminder using setTimeout (for demonstration)
-            // In a real app, you'd use more robust scheduling, possibly with a backend
-            alert('Reminder set! You will receive a notification in 5 seconds.');
-            setTimeout(() => {
-                new Notification('Reminder', {
-                    body: 'Time to take your daily picture! 📸',
-                    icon: 'https://via.placeholder.com/128' // Replace with actual icon
-                });
-            }, 5000);
-        }
-
-        // Request Notification Permission on Page Load
-        document.addEventListener('DOMContentLoaded', () => {
-            if ('Notification' in window && Notification.permission !== 'granted') {
-                Notification.requestPermission();
-            }
-        });
-    </script>
-</body>
-</html>
+            
