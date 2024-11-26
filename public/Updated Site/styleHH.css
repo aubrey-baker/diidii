@@ -7,7 +7,7 @@
 
 /* BODY TEXT*/
 body{
-    font-family: 'Poppins';
+    font-family: 'Montserrat';
     text-align: center;
     background-image: url(https://img.pikbest.com/wp/202343/delicate-pattern-watercolor-painting-on-canvas-abstract-art-with-soft-rose-gradient-and-light-purple-pink-hues-featuring-a-fragment-of-artwork-against-lilac-patterned-texture-backdrop_9941141.jpg!sw800);
     background-repeat: no-repeat;
@@ -65,7 +65,7 @@ nav{
 /* style each item in menu (font, size, color) */
 nav a{
     text-decoration:none;
-    font-family: 'Monsterrat';
+    font-family: 'Montserrat';
     letter-spacing: 5px;
     font-size: 25px;
     color: #fff;
@@ -75,7 +75,7 @@ nav a{
 nav a:hover {
     background-color: rgb(222, 222, 222);
     color: rgb(0, 0, 0);
-    font-family: 'Monsterrat';
+    font-family: 'Montserrat';
     
   }
 
@@ -128,7 +128,7 @@ h4 {
   }
  li {
   list-style-type: none;
-    font-family: 'Monsterrat';
+    font-family: 'Montserrat';
     letter-spacing: 1px;
     font-size: 20px;
     color: black;
