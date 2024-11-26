@@ -8,7 +8,7 @@
 
 /* BODY TEXT*/
 body{
-    font-family: 'Monsterrat';
+    font-family: 'Montserrat';
     text-align: center;
     background-image: url(https://t3.ftcdn.net/jpg/06/03/64/84/360_F_603648417_s1UEZPcHvGXK9sddwaMZ1PkXjAPJU1p8.jpg);
     background-repeat: no-repeat;
@@ -62,7 +62,7 @@ nav{
 /* style each item in menu (font, size, color) */
 nav a{
     text-decoration:none;
-    font-family: 'Poppins';
+    font-family: 'Montserrat';
     letter-spacing: 5px;
     font-size: 25px;
     color: #fff;
@@ -72,7 +72,7 @@ nav a{
 nav a:hover {
     background-color: rgb(222, 222, 222);
     color: rgb(0, 0, 0);
-    font-family: 'Monsterrat';
+    font-family: 'Montserrat';
     
   }
 
@@ -122,7 +122,7 @@ nav a:hover {
 }
  li {
   list-style-type: none;
-    font-family: 'Monsterrat';
+    font-family: 'Montserrat';
     letter-spacing: 1px;
     font-size: 20px;
     color: black;

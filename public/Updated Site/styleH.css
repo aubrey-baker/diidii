@@ -11,7 +11,7 @@
 
 /* BODY TEXT*/
 body{
-    font-family: 'Monsterrat';
+    font-family: 'Montserrat';
     text-align: center;
 }
 
@@ -48,7 +48,7 @@ nav{
 /* style each item in menu (font, size, color) */
 nav a{
   text-decoration:none;
-  font-family: 'Poppins';
+  font-family: 'Montserrat';
   letter-spacing: 5px;
   font-size: 25px;
   color: #fff;
@@ -76,7 +76,7 @@ nav a:hover {
   .banner-area h2 {
     padding-top:10%;
     font-size: 105px;
-    font-family:'Monsterrat';
+    font-family:'Montserrat';
     color: rgb(252, 252, 252);
   }
   /* WHITE BACKGROUND UNDER HEADER PICTURE*/
@@ -89,7 +89,7 @@ nav a:hover {
   }
   .content-area h2{
     font-size: 40px;
-    font-family: 'Monsterrat';
+    font-family: 'Montserrat';
   
     color: rgb(175, 111, 176);
     padding-top:45px;
@@ -111,19 +111,19 @@ nav a:hover {
 
   .picture-area p{
     font-size: 23px;
-    font-family:'Monsterrat';
+    font-family:'Montserrat';
     color: rgb(27, 27, 27);
     padding-top: 36px;
   }
 
   .picture-area p1 {
     text-align: right;
-    font-family: 'Source Sans 3';
+    font-family: 'Montserrat';
   }
 
   .picture-area h4 {
     font-size: 2.3em;
-    font-family: 'Monsterrat';
+    font-family: 'Montserrat';
     color: white;
    text-align: center;
    padding-top: 2px;
@@ -151,7 +151,7 @@ nav a:hover {
 }
 
 .background-area p{
-  font-family: 'Monserrat';
+  font-family: 'Montserrat';
   color: solid black;
   line-height: 1.6;
   font-size: 25px;
@@ -160,13 +160,13 @@ nav a:hover {
 }
 .background-area h1{
   font-size: 40px;
-  font-family:'Monsterrat';
+  font-family:'Montserrat';
   color: rgb(32, 32, 32);
   padding-top:25px;
 }
 
 .background-area h2{
   font-size: 40px;
-  font-family:'Monsterrat';
+  font-family:'Montserrat';
   color: rgb(27, 27, 27);
 }
