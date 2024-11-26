@@ -8,7 +8,7 @@
 
 /* BODY TEXT*/
 body{
-    font-family: 'Poppins';
+    font-family: 'Montserrat';
     text-align: center;
     background-image: url(https://png.pngtree.com/thumb_back/fw800/background/20231017/pngtree-lilac-gradient-fragment-watercolor-painting-on-canvas-with-abstract-light-purple-image_13685067.png);
     background-repeat: no-repeat;
@@ -55,7 +55,7 @@ header {
 .logo a{
     text-decoration: none;
     font-size: 30px;
-    font-family: 'Pacifico';
+    font-family: 'Montserrat';
     color: #fff;
     letter-spacing: 5px;
 
@@ -70,7 +70,7 @@ nav{
 /* style each item in menu (font, size, color) */
 nav a{
     text-decoration:none;
-    font-family: 'Poppins';
+    font-family: 'Montserrat';
     letter-spacing: 5px;
     font-size: 20px;
     color: #fff;
@@ -130,7 +130,7 @@ nav a:hover {
 }
  li {
   list-style-type: none;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-family: 'Montserrat';
     letter-spacing: 1px;
     font-size: 20px;
     color: black;
