@@ -11,7 +11,7 @@
 
 /* BODY TEXT*/
 body{
-    font-family: 'Poppins';
+    font-family: 'Montserrat';
     text-align: center;
 }
 
@@ -38,7 +38,7 @@ header {
 .logo a{
     text-decoration: none;
     font-size: 30px;
-    font-family: 'Pacifico';
+    font-family: 'Montserrat';
     color: #fff;
     letter-spacing: 5px;
 
@@ -53,7 +53,7 @@ nav{
 /* style each item in menu (font, size, color) */
 nav a{
     text-decoration:none;
-    font-family: 'Poppins';
+    font-family: 'Montserrat';
     letter-spacing: 5px;
     font-size: 25px;
     color: #fff;
@@ -81,7 +81,7 @@ nav a:hover {
   .banner-area h2 {
     padding-top:10%;
     font-size: 105px;
-    font-family:'Anton';
+    font-family:'Montserrat';
     color: rgb(252, 252, 252);
   }
   /* WHITE BACKGROUND UNDER HEADER PICTURE*/
@@ -94,7 +94,7 @@ nav a:hover {
   }
   .content-area h2{
     font-size: 40px;
-    font-family:'Pacifico';
+    font-family:'Montserrat';
     color: rgb(27, 27, 27);
     padding-top:45px;
     padding-bottom: 20px;
@@ -115,19 +115,19 @@ nav a:hover {
 
   .picture-area p{
     font-size: 23px;
-    font-family:'Anton';
+    font-family:'Montserrat';
     color: rgb(27, 27, 27);
     padding-top: 30px;
   }
 
   .picture-area p1 {
     text-align: right;
-    font-family: 'Source Sans 3';
+    font-family: 'Montserrat';
   }
 
   .picture-area h4 {
     font-size: 1.8em;
-    font-family: 'Black Han Sans';
+    font-family: 'Montserrat';
     color: white;
    text-align: center;
    padding-top: 12px;
@@ -155,7 +155,7 @@ nav a:hover {
 }
 
 .background-area p{
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   color: #333333;
   line-height: 1.6;
   font-size: 25px;
@@ -164,13 +164,13 @@ nav a:hover {
 }
 .background-area h1{
   font-size: 40px;
-  font-family:'Pacifico';
+  font-family:'Montserrat';
   color: rgb(27, 27, 27);
   padding-top:25px;
 }
 
 .background-area h2{
   font-size: 40px;
-  font-family:'Pacifico';
+  font-family:'Montserrat';
   color: rgb(27, 27, 27);
 }
