@@ -17,20 +17,7 @@
     </style>
 </head>
 <body>
-    <div class="topnav">
-        <header>
-            <div class="wrapper">
-                <div class="logo">
-                    <a href="#">Welcome to diidii</a>
-                </div>
-                <nav>
-                    <a href="help.html">Help</a>
-                    <a href="conect.html">Upload</a>
-                    <a href="index.html">Home</a>
-                </nav>
-            </div>
-        </header>
-    </div>
+    <div id="navbar"></div>
 
     <div class="container">
         <div class="tutorial">
@@ -67,9 +54,6 @@
             <div id="photoPreviewContainer" style="margin-top: 10px;">
                 <img id="photoPreview" alt="Photo Preview" style="display: none; max-width: 100%; border: 1px solid #ccc; border-radius: 5px;">
                 <button class="btn btn-primary" id="uploadPhoto" onclick="uploadPhoto()" style="display: none;">Upload Photo</button>
-                <div class="tutorial">
-                    <strong>How to Take Picture:</strong> Open Camera and Capture Yourself.
-                </div>
             </div>
         </div>
 
@@ -127,6 +111,13 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js" integrity="sha512-Fo3rlrZj/k7ujTTXJNkl/6kB1e+BYEuN2e4rTk0Y6M8A/4XV1Ji5S+5hrXnZpN8XTvUPhA5oYgL+KUxVh3v3Og==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+        // Include the navbar
+        fetch('navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar').innerHTML = data;
+            });
+
         function previewImages(event) {
             const files = event.target.files;
             const previewContainer = document.getElementById('imagePreviewContainer');

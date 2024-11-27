@@ -65,7 +65,8 @@ const storage = multer.diskStorage({
         cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
+        const fileName = req.body.fileName || Date.now().toString();
+        cb(null, `${fileName}${path.extname(file.originalname)}`);
     }
 });
 
@@ -135,7 +136,7 @@ app.get('/user-files', (req, res) => {
         const subDirPath = path.join(userDir, subDir);
         if (fs.existsSync(subDirPath)) {
             fs.readdirSync(subDirPath).forEach(file => {
-                files.push({ type: subDir, name: file, path: path.join(subDir, file) });
+                files.push({ type: subDir, name: file, path: path.join(username, subDir, file) });
             });
         }
     });
