@@ -19,8 +19,8 @@
             height: 100vh;
         }
         .topnav {
-            background-color: rgb(148, 74, 159);
             width: 100%;
+            background-color: rgb(148, 74, 159);
             overflow: hidden;
             position: fixed;
             top: 0;
@@ -30,18 +30,36 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 16px;
+            padding: 10px 20px;
         }
-        .topnav a {
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
+        .topnav .logo a {
             text-decoration: none;
-            font-size: 1.5em; /* Increase font size for navigation links */
+            font-size: 30px;
+            font-family: 'Montserrat';
+            color: #fff;
+            letter-spacing: 5px;
         }
-        .topnav a:hover {
-            background-color: #ddd;
-            color: black;
+        .topnav nav {
+            display: flex;
+            gap: 20px;
+        }
+        .topnav nav a {
+            text-decoration: none;
+            font-family: 'Montserrat';
+            letter-spacing: 5px;
+            font-size: 20px;
+            color: #fff;
+            padding: 10px 15px;
+        }
+        .topnav nav a:hover {
+            background-color: rgb(222, 222, 222);
+            color: rgb(0, 0, 0);
+        }
+        .profile-badge {
+            background-color: #6A0DAD;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
         }
         .content-area {
             font-size: 2em; /* Increase font size for older users */
@@ -52,7 +70,7 @@
             max-width: 600px;
             width: 100%;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-top: 10px; /* Add margin to push content below the fixed header */
+            margin-top: 100px; /* Add margin to push content below the fixed header */
             height: 600px; /* Allow the height to adjust based on content */
         }
         .content-area input[type="text"],
@@ -83,19 +101,7 @@
     </style>
 </head>
 <body>
-    <div class="topnav">
-        <div class="wrapper">
-            <div class="logo">
-                <a href="#">Welcome to diidii</a>
-            </div>
-            <nav>
-                <a href="help.html">Help</a>
-                <a href="conect.html">Upload</a>
-                <a href="index.html">Home</a>
-                <a href="home.html">Home Page</a> <!-- Added Home Page tab -->
-            </nav>
-        </div>
-    </div>
+    <div id="navbar"></div>
 
     <div class="content-area">
         <div class="wrapper">
@@ -117,6 +123,23 @@
     </footer>
 
     <script>
+        // Include the navbar
+        fetch('navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar').innerHTML = data;
+
+                // Check if the user is logged in and display the profile badge
+                fetch('/check-login')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.loggedIn) {
+                            document.getElementById('usernameDisplay').textContent = data.username;
+                            document.getElementById('profileBadge').style.display = 'block';
+                        }
+                    });
+            });
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('username').value;
