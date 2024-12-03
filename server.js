@@ -18,6 +18,10 @@ app.use(session({
 // Ensure the uploads directory exists
 const uploadDir = path.join(__dirname, 'uploads');
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', (req, res, next) => {
+    console.log('Request for:', req.url);
+    next();
+}, express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -163,6 +167,37 @@ app.post('/login', (req, res) => {
     });
 });
 
+// Add signup route
+app.post('/signup', (req, res) => {
+    const { username, password } = req.body;
+
+    // Basic validation
+    if (!username || !password) {
+        return res.status(400).send('Username and password are required');
+    }
+
+    // Check if user already exists
+    db.get('SELECT * FROM users WHERE username = ?', [username], (err, row) => {
+        if (err) {
+            console.error('Error querying database:', err);
+            return res.status(500).send('Internal server error');
+        }
+
+        if (row) {
+            return res.status(400).send('Username already exists');
+        }
+
+        // Insert new user
+        db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username, password], (err) => {
+            if (err) {
+                console.error('Error inserting user:', err);
+                return res.status(500).send('Failed to create user');
+            }
+            res.status(200).send('User created successfully');
+        });
+    });
+});
+
 // Route to check if the user is logged in
 app.get('/check-login', (req, res) => {
     if (req.session.username) {
@@ -171,6 +206,24 @@ app.get('/check-login', (req, res) => {
         res.json({ loggedIn: false });
     }
 });
+
+// Route to handle logout
+app.post('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).send('Failed to log out');
+        }
+        res.clearCookie('connect.sid'); // Clear the session cookie
+        res.status(200).send('Logout successful');
+    });
+});
+
+// Add specific CORS and debugging middleware
+app.use('/uploads', (req, res, next) => {
+    console.log('Requesting file:', req.url);
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+}, express.static(uploadDir));
 
 // Start server
 const PORT = process.env.PORT || 3000;
