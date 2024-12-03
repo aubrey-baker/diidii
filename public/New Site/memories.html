@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styleH.css">
+    <title>Memories</title>
+    <style>
+        .memory-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+        }
+        .memory-item {
+            width: 250px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .memory-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 3px;
+            margin-bottom: 10px;
+        }
+        .memory-item video, .memory-item audio {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .file-name {
+            font-weight: bold;
+            margin: 5px 0;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <div class="content-area">
+        <div class="wrapper">
+            <h2>Your Memories</h2>
+            <div id="memories" class="memory-grid"></div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 Diidii App. All rights reserved.
+    </footer>
+
+    <script>
+        // Add variable to store logged-in username
+        let currentUser = '';
+
+        // Include the navbar and get logged-in user
+        fetch('navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar').innerHTML = data;
+
+                // Check if the user is logged in and display the profile badge
+                fetch('/check-login')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.loggedIn) {
+                            currentUser = data.username; // Store username
+                            document.getElementById('usernameDisplay').textContent = data.username;
+                            document.getElementById('profileBadge').style.display = 'block';
+                            fetchMemories(); // Fetch memories after getting username
+                        }
+                    });
+            });
+
+        async function fetchMemories() {
+            try {
+                const memoriesContainer = document.getElementById('memories');
+                memoriesContainer.innerHTML = '<div>Loading memories...</div>';
+
+                const response = await fetch('/user-files');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const files = await response.json();
+                console.log('Received files:', files);
+
+                memoriesContainer.className = 'memory-grid';
+                memoriesContainer.innerHTML = '';
+
+                if (files.length === 0) {
+                    memoriesContainer.innerHTML = '<div>No memories found</div>';
+                    return;
+                }
+
+                files.forEach(file => {
+                    const memoryItem = document.createElement('div');
+                    memoryItem.className = 'memory-item';
+
+                    if (file.type === 'images') {
+                        const img = document.createElement('img');
+                        // Use currentUser in path construction
+                        const fullPath = `/uploads/${currentUser}/images/${file.name}`;
+                        console.log('Loading image:', fullPath);
+                        
+                        img.src = fullPath;
+                        img.alt = file.name;
+                        
+                        img.onerror = (e) => {
+                            console.error(`Failed to load image: ${fullPath}`, e);
+                            img.style.border = '2px solid red';
+                        };
+                        
+                        img.onload = () => {
+                            console.log(`Successfully loaded: ${fullPath}`);
+                            img.style.border = '1px solid #ddd';
+                        };
+                        
+                        memoryItem.appendChild(img);
+                    }
+                    
+                    const fileName = document.createElement('div');
+                    fileName.className = 'file-name';
+                    fileName.textContent = file.name;
+                    memoryItem.appendChild(fileName);
+                    
+                    memoriesContainer.appendChild(memoryItem);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                memoriesContainer.innerHTML = `<div>Error loading memories: ${error.message}</div>`;
+            }
+        }
+
+        // Remove the DOMContentLoaded event listener since we now call fetchMemories after getting the username
+    </script>
+</body>
+</html>

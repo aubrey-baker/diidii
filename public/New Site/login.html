@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styleH.css">
+    <title>Login</title>
+    <style>
+        body {
+            background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20200923/pngtree-beautiful-elegant-pink-red-purple-watercolor-smudge-background-image_399307.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+        .topnav {
+            width: 100%;
+            background-color: rgb(148, 74, 159);
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        .topnav .wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        .topnav .logo a {
+            text-decoration: none;
+            font-size: 30px;
+            font-family: 'Montserrat';
+            color: #fff;
+            letter-spacing: 5px;
+        }
+        .topnav nav {
+            display: flex;
+            gap: 20px;
+        }
+        .topnav nav a {
+            text-decoration: none;
+            font-family: 'Montserrat';
+            letter-spacing: 5px;
+            font-size: 20px;
+            color: #fff;
+            padding: 10px 15px;
+        }
+        .topnav nav a:hover {
+            background-color: rgb(222, 222, 222);
+            color: rgb(0, 0, 0);
+        }
+        .profile-badge {
+            background-color: #6A0DAD;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+        .content-area {
+            font-size: 2em; /* Increase font size for older users */
+            color: #333;
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+            padding: 40px; /* Increased padding */
+            border-radius: 10px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 100px; /* Add margin to push content below the fixed header */
+            height: 600px; /* Allow the height to adjust based on content */
+        }
+        .content-area input[type="text"],
+        .content-area input[type="password"] {
+            width: 100%;
+            padding: 20px;
+            margin: 10px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 1.5em; /* Increase input box font size */
+            border-radius: 5px;
+        }
+        .content-area button {
+            background-color: rgb(148, 74, 159);
+            color: white;
+            padding: 20px;
+            margin: 10px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.5em; /* Increase button font size */
+            border-radius: 5px;
+        }
+        .content-area button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <div class="content-area">
+        <div class="wrapper">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+                <br>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <br>
+                <button type="submit">Login</button>
+                <button type="button" id="signupBtn" style="background-color: #4CAF50;">Sign Up</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 Diidii App. All rights reserved.
+    </footer>
+
+    <script>
+        // Include the navbar
+        fetch('navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar').innerHTML = data;
+
+                // Check if the user is logged in and display the profile badge
+                fetch('/check-login')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.loggedIn) {
+                            document.getElementById('usernameDisplay').textContent = data.username;
+                            document.getElementById('profileBadge').style.display = 'block';
+                        }
+                    });
+            });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
+                alert('Login successful!');
+                window.location.href = 'index.html';
+            } else {
+                alert('Login failed. Please check your username and password.');
+            }
+        });
+
+        // Add this to your existing script
+        document.getElementById('signupBtn').addEventListener('click', async () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                alert('Please enter both username and password');
+                return;
+            }
+
+            const response = await fetch('/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
+                alert('Sign up successful! Please login.');
+                document.getElementById('loginForm').reset();
+            } else {
+                const error = await response.text();
+                alert(error);
+            }
+        });
+    </script>
+</body>
+</html>
