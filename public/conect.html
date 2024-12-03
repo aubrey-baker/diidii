@@ -56,66 +56,28 @@
                 <button class="btn btn-primary" id="uploadPhoto" onclick="uploadPhoto()" style="display: none;">Upload Photo</button>
             </div>
         </div>
-
-        <div class="section" id="record-video">
-            <h2>Record Videos</h2>
-            <button class="btn btn-primary" id="openCamera">Open Camera</button>
-            <video id="videoPreview" width="320" height="240" autoplay></video>
-            <button class="btn btn-success" id="startRecordingVideo" style="display: none;">Start Recording</button>
-            <button class="btn btn-danger" id="stopRecordingVideo" style="display: none;">Stop Recording</button>
-            <video id="recordedVideo" width="320" height="240" controls style="display: none;"></video>
-            <form id="uploadVideoForm" style="display: none;">
-                <input type="file" id="videoFile" name="videoFile" accept="video/*">
-                <button type="submit" class="btn btn-primary">Upload Video</button>
-            </form>
-            <div class="tutorial">
-                <strong>How to Record Videos:</strong> Open Camera, Start Recording, and Save Your Video.
-            </div>
-        </div>
-
-        <div class="section" id="record-audio">
-            <h2>Record Audio</h2>
-            <button class="btn btn-warning" id="openMicrophone">
-                <i class="fas fa-microphone"></i> Open Microphone
-            </button>
-            <audio id="audioPreview" controls style="display: none;"></audio>
-            <button id="startRecordingAudio" class="btn btn-info" style="display: none;">Start Recording</button>
-            <button id="stopRecordingAudio" class="btn btn-info" style="display: none;">Stop Recording</button>
-            <audio id="recordedAudio" controls style="display: none;"></audio>
-            <form id="uploadAudioForm" style="display: none;">
-                <input type="file" id="audioFile" name="audioFile" accept="audio/*">
-                <button type="submit" class="btn btn-primary">Upload Audio</button>
-            </form>
-            <div class="tutorial">
-                <strong>How to Record Audio:</strong> Open Microphone, Start Recording, say something, and stop recording.
-            </div>
-        </div>
-
-        <div class="section" id="reminders">
-            <h2>Reminders</h2>
-            <div class="reminder">
-                <p>Don't forget to take your daily pictures! </p>
-            </div>
-            <button class="btn btn-info" onclick="setReminder()">
-                <i class="fas fa-bell"></i> Set Reminder
-            </button>
-            <div class="tutorial">
-                <strong>How to Set Reminders:</strong> Click the "Set Reminder" button to receive daily notifications.
-            </div>
-        </div>
     </div>
 
     <footer>
         &copy; 2024 Diidii App. All rights reserved.
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js" integrity="sha512-Fo3rlrZj/k7ujTTXJNkl/6kB1e+BYEuN2e4rTk0Y6M8A/4XV1Ji5S+5hrXnZpN8XTvUPhA5oYgL+KUxVh3v3Og==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         // Include the navbar
         fetch('navbar.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('navbar').innerHTML = data;
+
+                // Check if the user is logged in and display the profile badge
+                fetch('/check-login')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.loggedIn) {
+                            document.getElementById('usernameDisplay').textContent = data.username;
+                            document.getElementById('profileBadge').style.display = 'block';
+                        }
+                    });
             });
 
         function previewImages(event) {
@@ -157,10 +119,30 @@
 
             Array.from(files).forEach((file, index) => {
                 const fileNameInput = document.getElementById(`fileName_${index}`);
-                const fileName = fileNameInput ? fileNameInput.value : '';
-                formData.append('image', file);
-                formData.append('fileName', fileName);
+                let fileName = '';
+                const timestamp = Date.now() + index;
+                const originalExtension = file.name.split('.').pop().toLowerCase();
+                
+                if (fileNameInput && fileNameInput.value.trim()) {
+                    // Use custom name if provided
+                    fileName = fileNameInput.value.trim();
+                    // Remove special characters and file extensions
+                    fileName = fileName.replace(/[,\/\\:*?"<>|]/g, '')
+                                     .replace(/\.[^/.]+$/, '');
+                    // Add extension
+                    fileName = `${timestamp}_${fileName}.${originalExtension}`;
+                } else {
+                    // Keep original name without extension, then add timestamp
+                    const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
+                    fileName = `${timestamp}_${nameWithoutExt}.${originalExtension}`;
+                }
+
+                // Use consistent field names
+                formData.append('images', file);
+                formData.append(`fileName_${index}`, fileName);
             });
+
+            formData.append('fileCount', files.length);
 
             fetch('/upload-images', {
                 method: 'POST',
@@ -169,23 +151,14 @@
             .then(response => response.text())
             .then(result => {
                 alert(result);
+                document.getElementById('imageUpload').value = '';
+                document.getElementById('imagePreviewContainer').innerHTML = '';
             })
             .catch(error => {
                 console.error('Error uploading images:', error);
                 alert('Failed to upload images.');
             });
         }
-
-        let mediaRecorderVideo;
-        let recordedChunksVideo = [];
-
-        const openCameraButton = document.getElementById('openCamera');
-        const startRecordingVideoButton = document.getElementById('startRecordingVideo');
-        const stopRecordingVideoButton = document.getElementById('stopRecordingVideo');
-        const videoPreview = document.getElementById('videoPreview');
-        const recordedVideo = document.getElementById('recordedVideo');
-        const uploadVideoForm = document.getElementById('uploadVideoForm');
-        const videoFileInput = document.getElementById('videoFile');
 
         function openCamera() {
             const video = document.getElementById('cameraPreview');
@@ -218,9 +191,6 @@
             
             videoStream.getTracks().forEach(track => track.stop());
             video.style.display = 'none';
-            document.getElementById('capturePhoto').style.display = 'none';
-
-            // Show the upload button
             document.getElementById('uploadPhoto').style.display = 'inline-block';
         }
 
@@ -238,215 +208,6 @@
             .then(response => response.ok ? alert('Photo uploaded successfully!') : alert('Failed to upload photo.'))
             .catch(error => console.error('Error uploading photo:', error));
         }
-
-        // Open the camera
-        openCameraButton.addEventListener('click', async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                videoPreview.srcObject = stream;
-                startRecordingVideoButton.style.display = 'inline';
-            } catch (err) {
-                console.error('Error accessing camera: ', err);
-                alert('Could not access the camera.');
-            }
-        });
-
-        // Start recording video
-        startRecordingVideoButton.addEventListener('click', () => {
-            recordedChunksVideo = [];
-            const stream = videoPreview.srcObject;
-            mediaRecorderVideo = new MediaRecorder(stream);
-
-            mediaRecorderVideo.ondataavailable = function(event) {
-                if (event.data.size > 0) {
-                    recordedChunksVideo.push(event.data);
-                }
-            };
-
-            mediaRecorderVideo.onstop = function() {
-                const blob = new Blob(recordedChunksVideo, { type: 'video/mp4' });
-                const videoURL = URL.createObjectURL(blob);
-                recordedVideo.src = videoURL;
-                recordedVideo.style.display = 'block';
-
-                // Prepare the video for upload
-                const file = new File([blob], 'video.mp4', { type: 'video/mp4' });
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                videoFileInput.files = dataTransfer.files;
-
-                uploadVideoForm.style.display = 'block';
-            };
-
-            mediaRecorderVideo.start();
-            stopRecordingVideoButton.style.display = 'inline';
-            startRecordingVideoButton.style.display = 'none';
-        });
-
-        // Stop recording video
-        stopRecordingVideoButton.addEventListener('click', () => {
-            mediaRecorderVideo.stop();
-            stopRecordingVideoButton.style.display = 'none';
-        });
-
-        // Handle video upload form submission
-        uploadVideoForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(uploadVideoForm);
-            const response = await fetch('/upload-video', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                alert('Video uploaded successfully!');
-            } else {
-                alert('Failed to upload video.');
-            }
-        });
-
-        // Audio Recording
-        let mediaRecorderAudio;
-        let recordedChunksAudio = [];
-
-        const openMicrophoneButton = document.getElementById('openMicrophone');
-        const startRecordingAudioButton = document.getElementById('startRecordingAudio');
-        const stopRecordingAudioButton = document.getElementById('stopRecordingAudio');
-        const audioPreview = document.getElementById('audioPreview');
-        const recordedAudio = document.getElementById('recordedAudio');
-        const audioFileInput = document.getElementById('audioFile');
-
-        // Open the microphone
-        openMicrophoneButton.addEventListener('click', async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                audioPreview.srcObject = stream;
-                audioPreview.style.display = 'block';
-                startRecordingAudioButton.style.display = 'inline';
-            } catch (err) {
-                console.error('Error accessing microphone: ', err);
-                alert('Could not access the microphone.');
-            }
-        });
-
-        // Start recording audio
-        startRecordingAudioButton.addEventListener('click', () => {
-            recordedChunksAudio = [];
-            const stream = audioPreview.srcObject;
-            mediaRecorderAudio = new MediaRecorder(stream);
-
-            mediaRecorderAudio.ondataavailable = function(event) {
-                if (event.data.size > 0) {
-                    recordedChunksAudio.push(event.data);
-                }
-            };
-
-            mediaRecorderAudio.onstop = function() {
-                const blob = new Blob(recordedChunksAudio, { type: 'audio/mp3' });
-                const audioURL = URL.createObjectURL(blob);
-                recordedAudio.src = audioURL;
-                recordedAudio.style.display = 'block';
-
-                // Prepare the audio for upload
-                const file = new File([blob], 'audio.mp3', { type: 'audio/mp3' });
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                audioFileInput.files = dataTransfer.files;
-
-                uploadAudioForm.style.display = 'block';
-            };
-
-            mediaRecorderAudio.start();
-            stopRecordingAudioButton.style.display = 'inline';
-            startRecordingAudioButton.style.display = 'none';
-        });
-
-        // Stop recording audio
-        stopRecordingAudioButton.addEventListener('click', () => {
-            mediaRecorderAudio.stop();
-            stopRecordingAudioButton.style.display = 'none';
-        });
-
-        // Handle audio upload form submission
-        uploadAudioForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(uploadAudioForm);
-            const response = await fetch('/upload-audio', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                alert('Audio uploaded successfully!');
-            } else {
-                alert('Failed to upload audio.');
-            }
-        });
-
-        // Upload Image Function
-        function uploadImage() {
-            const imageInput = document.getElementById('imageUpload');
-            if (imageInput.files.length > 0) {
-                // Implement actual upload logic here (e.g., send to server)
-                alert('Image uploaded successfully!');
-                imageInput.value = ''; // Reset the input
-            } else {
-                alert('Please select an image to upload.');
-            }
-        }
-
-        // Record Video Function
-        function recordVideo() {
-            // Implement actual video recording functionality using MediaRecorder API
-            alert('Video recording feature is under development.');
-        }
-
-        // Record Audio Function
-        function recordAudio() {
-            // Implement actual audio recording functionality using MediaRecorder API
-            alert('Audio recording feature is under development.');
-        }
-
-        // Set Reminder Function
-        function setReminder() {
-            if (!('Notification' in window)) {
-                alert('This browser does not support desktop notifications.');
-                return;
-            }
-
-            if (Notification.permission === 'granted') {
-                scheduleReminder();
-            } else if (Notification.permission !== 'denied') {
-                Notification.requestPermission().then(permission => {
-                    if (permission === 'granted') {
-                        scheduleReminder();
-                    } else {
-                        alert('Permission denied for notifications.');
-                    }
-                });
-            } else {
-                alert('You have blocked notifications.');
-            }
-        }
-
-        function scheduleReminder() {
-            // Simple reminder using setTimeout (for demonstration)
-            // In a real app, you'd use more robust scheduling, possibly with a backend
-            alert('Reminder set! You will receive a notification in 5 seconds.');
-            setTimeout(() => {
-                new Notification('Reminder', {
-                    body: 'Time to take your daily picture! 📸',
-                    icon: 'https://via.placeholder.com/128' // Replace with actual icon
-                });
-            }, 5000);
-        }
-
-        // Request Notification Permission on Page Load
-        document.addEventListener('DOMContentLoaded', () => {
-            if ('Notification' in window && Notification.permission !== 'granted') {
-                Notification.requestPermission();
-            }
-        });
     </script>
 </body>
 </html>

@@ -78,10 +78,22 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Route for handling image uploads from "Upload Images" section
-app.post('/upload-images', upload.array('image', 10), (req, res) => {
-    if (!req.files) {
+app.post('/upload-images', upload.array('images', 10), (req, res) => {
+    const fileCount = req.body.fileCount;
+    
+    if (!req.files || req.files.length === 0) {
         return res.status(400).send('No files were uploaded.');
     }
+
+    // Process files
+    req.files.forEach((file, index) => {
+        const customName = req.body[`fileName_${index}`];
+        if (customName) {
+            const newPath = path.join(file.destination, customName);
+            fs.renameSync(file.path, newPath);
+        }
+    });
+
     res.status(200).send('Images uploaded successfully');
 });
 
