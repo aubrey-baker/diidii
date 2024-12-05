@@ -3,7 +3,7 @@ import random
 import os
 import time
 
-def fetch_random_image():
+def fetch_random_media():
     # Wikimedia Commons API endpoint
     url = "https://commons.wikimedia.org/w/api.php"
 
@@ -13,9 +13,10 @@ def fetch_random_image():
         "format": "json",
         "generator": "random",
         "grnnamespace": "6",  # Namespace for files
-        "prop": "imageinfo",
+        "prop": "imageinfo|videoinfo",
         "iiprop": "url",
-        "grnlimit": "10"  # Fetch 10 random images
+        "viprop": "url",
+        "grnlimit": "10"  # Fetch 10 random media files to increase chances of getting videos
     }
 
     headers = {
@@ -26,52 +27,61 @@ def fetch_random_image():
     response = requests.get(url, params=params, headers=headers)
     data = response.json()
 
-    # Extract image URLs
+    # Extract media URLs
     pages = data.get("query", {}).get("pages", {})
-    image_urls = [page["imageinfo"][0]["url"] for page in pages.values()]
+    media_urls = []
+    video_urls = []
 
-    # Filter URLs to include only common image formats
-    image_urls = [url for url in image_urls if url.lower().endswith(('.jpg', '.jpeg', '.png', '.gif'))]
+    for page in pages.values():
+        if "imageinfo" in page:
+            media_urls.append(page["imageinfo"][0]["url"])
+        if "videoinfo" in page:
+            video_urls.append(page["videoinfo"][0]["url"])
 
-    # Select a random image URL
-    if image_urls:
-        random_image_url = random.choice(image_urls)
-        return random_image_url
-    else:
-        return None
+    # Ensure at least 2 videos are included
+    if len(video_urls) < 2:
+        return None, None
 
-def download_image(image_url, save_path):
+    # Filter URLs to include only common image and video formats
+    media_urls = [url for url in media_urls if url.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.mp4', '.webm', '.ogg'))]
+    media_urls.extend(video_urls)
+
+    # Select random media URLs
+    random.shuffle(media_urls)
+    return media_urls[:5], video_urls[:2]
+
+def download_media(media_url, save_path):
     try:
         headers = {
             "User-Agent": "CS410 UMass Boston (aubrey.place ; Jordan.Baker001@umb.edu)" 
         }
-        response = requests.get(image_url, headers=headers)
+        response = requests.get(media_url, headers=headers)
         response.raise_for_status()  # Raise an exception for HTTP errors
         with open(save_path, 'wb') as file:
             file.write(response.content)
-        print(f"Image downloaded: {save_path}")
+        print(f"Media downloaded: {save_path}")
     except requests.exceptions.RequestException as e:
-        print(f"Failed to download image: {e}")
+        print(f"Failed to download media: {e}")
 
 if __name__ == "__main__":
-    num_images = 5  # Specify the number of images to download
+    num_media = 5  # Specify the number of media files to download
 
-    # Ensure the test_images directory exists
-    save_dir = os.path.join(os.getcwd(), "test_images")
+    # Ensure the test_media directory exists
+    save_dir = os.path.join(os.getcwd(), "test_media")
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
-    for i in range(num_images):
-        random_image_url = fetch_random_image()
-        if random_image_url:
-            print(f"Random Image URL: {random_image_url}")
+    media_urls, video_urls = fetch_random_media()
+    if media_urls and video_urls:
+        for i, media_url in enumerate(media_urls):
+            print(f"Random Media URL: {media_url}")
 
-            # Define the save path for the image with a timestamp to ensure uniqueness
+            # Define the save path for the media with a timestamp to ensure uniqueness
             timestamp = int(time.time())
-            file_extension = os.path.splitext(random_image_url)[1]
-            save_path = os.path.join(save_dir, f"random_image_{timestamp}_{i}{file_extension}")
+            file_extension = os.path.splitext(media_url)[1]
+            save_path = os.path.join(save_dir, f"random_media_{timestamp}_{i}{file_extension}")
 
-            # Download the image
-            download_image(random_image_url, save_path)
-        else:
-            print("No suitable image found.")
+            # Download the media
+            download_media(media_url, save_path)
+    else:
+        print("No suitable media found or not enough videos.")

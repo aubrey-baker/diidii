@@ -1,78 +1,183 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const questionsContainer = document.getElementById("questions-container");
-    const recommendationsDiv = document.getElementById("recommendations");
+document.addEventListener("DOMContentLoaded", async function () {
+    await populateArtists(); // Populate artists on page load
+    const form = document.getElementById("questionnaire-form");
+    const recommendationsList = document.getElementById("recommendations-list");
+    const artistSelect = document.getElementById("artist");
 
-    // Fetch questions and populate form
-    async function loadQuestions() {
+    // Populate artist dropdown
+    async function populateArtists() {
         try {
-            const response = await fetch("http://127.0.0.1:5000/questions");
-            console.log("Response status:", response.status);
-            const questions = await response.json();
-            console.log("Questions received:", questions);
-    
-            const container = document.getElementById("questions-container");
-            questions.forEach((question) => {
-                const questionDiv = document.createElement("div");
-                questionDiv.className = "question";
-    
-                questionDiv.innerHTML = `
-                    <label for="q${question.id}">${question.question}</label>
-                    <input type="text" id="q${question.id}" name="q${question.id}" placeholder="Your answer">
-                `;
-    
-                container.appendChild(questionDiv);
-            });
-        } catch (error) {
-            console.error("Error loading questions:", error);
-            const container = document.getElementById("questions-container");
-            container.innerHTML = "<p>Failed to load questions. Please try again later.</p>";
-        }
-    }
-    
-
-    // Handle form submission
-    async function handleSubmit(event) {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        const data = {};
-        formData.forEach((value, key) => {
-            data[key] = value;
-        });
-
-        try {
-            const response = await fetch("http://127.0.0.1:5000/submit", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
-
-            const result = await response.json();
-            recommendationsDiv.innerHTML = "";
-
-            if (result.data.length > 0) {
-                result.data.forEach(song => {
-                    const div = document.createElement("div");
-                    div.className = "recommendation-item";
-                    div.innerHTML = `
-                        <p><strong>Title:</strong> ${song.title}</p>
-                        <p><strong>Artist:</strong> ${song.artist_name}</p>
-                        <p><strong>Year:</strong> ${song.year}</p>
-                        <p><strong>Description:</strong> ${song.description}</p>
-                    `;
-                    recommendationsDiv.appendChild(div);
+            const response = await fetch("http://127.0.0.1:5000/get-artists");
+            const data = await response.json();
+            if (data.artists) {
+                artistSelect.innerHTML = `<option value="" disabled selected>Choose an artist</option>`;
+                data.artists.forEach((artist) => {
+                    const option = document.createElement("option");
+                    option.value = artist;
+                    option.textContent = artist;
+                    artistSelect.appendChild(option);
                 });
-            } else {
-                recommendationsDiv.innerHTML = "<p>No recommendations found based on your preferences.</p>";
             }
         } catch (error) {
-            console.error("Error submitting preferences:", error);
-            recommendationsDiv.innerHTML = "<p>An error occurred while fetching recommendations.</p>";
+            console.error("Error fetching artist names:", error);
         }
     }
 
-    // Load questions and attach event listeners
-    loadQuestions();
-    document.getElementById("questionnaire-form").addEventListener("submit", handleSubmit);
+    // Fetch recommendations based on tempo, decade, and artist
+    async function fetchRecommendations(tempo, decade, artist) {
+        try {
+            const response = await fetch("http://127.0.0.1:5000/submit-form", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ tempo, decade, artist }),
+            });
+            return await response.json();
+        } catch (error) {
+            console.error("Error fetching recommendations:", error);
+            return null;
+        }
+    }
+
+    // Handle form submission
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        recommendationsList.innerHTML = "";
+
+        const tempo = document.getElementById("tempo").value;
+        const decade = document.getElementById("decade").value;
+        const artist = artistSelect.value;
+
+        if (tempo === "both") {
+            // Fetch results for both "Fast" and "Slow"
+            const fastResults = await fetchRecommendations("fast", decade, artist);
+            const slowResults = await fetchRecommendations("slow", decade, artist);
+
+            // Display both results
+            if (fastResults) displayRecommendations(fastResults, "Fast");
+            if (slowResults) displayRecommendations(slowResults, "Slow");
+        } else {
+            // Fetch results for selected tempo
+            const results = await fetchRecommendations(tempo, decade, artist);
+            if (results) displayRecommendations(results, tempo.charAt(0).toUpperCase() + tempo.slice(1));
+        }
+    });
+
+    // Display recommendations in the UI
+    function displayRecommendations(data, label = "") {
+        if (data.error) {
+            const errorItem = document.createElement("li");
+            errorItem.textContent = `${label} Tempo: ${data.error}`;
+            errorItem.classList.add("error");
+            recommendationsList.appendChild(errorItem);
+
+            if (data.fallback) {
+                data.fallback.forEach((song) => {
+                    addRecommendation(song, `${label} Fallback`);
+                });
+            }
+            return;
+        }
+
+        data.data.forEach((song) => {
+            addRecommendation(song, label);
+        });
+    }
+
+    // Add individual recommendation to the list
+    function addRecommendation(song, label) {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = `
+            <strong>${label} Title:</strong> ${song.title || "Unknown"} <br>
+            <strong>Artist:</strong> ${song.artist_name || "Unknown"} <br>
+            <strong>Tempo:</strong> ${song.tempo || "Unknown"} BPM <br>
+            <strong>Year:</strong> ${song.year || "Unknown"} <br>
+            <h4>YouTube Recommendations:</h4>
+            <ul>
+                ${song.youtube_recommendations
+                    .map(
+                        (video) => `
+                    <li>
+                        <a href="${video.youtube_link}" target="_blank">${video.video_title}</a>
+                    </li>`
+                    )
+                    .join("")}
+            </ul>
+        `;
+        recommendationsList.appendChild(listItem);
+    }
+
+    // Populate artist dropdown on page load
+    await populateArtists();
 });
+
+    // Function to handle form submission
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        recommendationsList.innerHTML = "";
+
+        const tempo = document.getElementById("tempo").value;
+        const decade = document.getElementById("decade").value;
+        const artist = artistSelect.value;
+
+        try {
+            const response = await fetch("http://127.0.0.1:5000/submit-form", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ tempo, decade, artist }),
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                const errorItem = document.createElement("li");
+                errorItem.textContent = data.error;
+                errorItem.classList.add("error");
+                recommendationsList.appendChild(errorItem);
+
+                if (data.fallback) {
+                    data.fallback.forEach((song) => {
+                        const listItem = document.createElement("li");
+                        listItem.innerHTML = `
+                            <strong>Title:</strong> ${song.title || "Unknown"} <br>
+                            <strong>Artist:</strong> ${song.artist_name || "Unknown"} <br>
+                            <strong>Tempo:</strong> ${song.tempo || "Unknown"} BPM <br>
+                            <strong>Year:</strong> ${song.year || "Unknown"} <br>
+                            <a href="${song.youtube_link}" target="_blank">Listen on YouTube</a>
+                        `;
+                        recommendationsList.appendChild(listItem);
+                    });
+                }
+                return;
+            }
+
+            // Display recommendations
+            data.data.forEach((song) => {
+                const listItem = document.createElement("li");
+                listItem.innerHTML = `
+                    <strong>Title:</strong> ${song.title || "Unknown"} <br>
+                    <strong>Artist:</strong> ${song.artist_name || "Unknown"} <br>
+                    <strong>Tempo:</strong> ${song.tempo || "Unknown"} BPM <br>
+                    <strong>Year:</strong> ${song.year || "Unknown"} <br>
+                    <h4>YouTube Recommendations:</h4>
+                    <ul>
+                        ${song.youtube_recommendations
+                            .map(
+                                (video) => `
+                            <li>
+                                <a href="${video.youtube_link}" target="_blank">${video.video_title}</a>
+                            </li>`
+                            )
+                            .join("")}
+                    </ul>
+                `;
+                recommendationsList.appendChild(listItem);
+            });
+        } catch (error) {
+            const errorItem = document.createElement("li");
+            errorItem.textContent = "An error occurred while fetching recommendations.";
+            errorItem.classList.add("error");
+            recommendationsList.appendChild(errorItem);
+            console.error("Error:", error);
+        }
+    });

@@ -3,145 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Preferences Questionnaire</title>
+    <title>Music Preferences for Dementia Patients</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            line-height: 1.6;
-        }
-        h1, h2 {
+            background-color: #f0f8ff;
             text-align: center;
+            margin: 20px;
+            color: #333;
         }
-        form {
-            max-width: 600px;
-            margin: auto;
-        }
-        .question {
-            margin-bottom: 15px;
-        }
-        .question label {
-            display: block;
-            font-weight: bold;
-        }
-        .question input {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            box-sizing: border-box;
-        }
-        #recommendations {
-            max-width: 600px;
-            margin: 20px auto;
+        #questionnaire-form {
+            max-width: 500px;
+            margin: 0 auto;
             padding: 20px;
+            border: 2px solid #007bff;
+            border-radius: 15px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #questionnaire-form div {
+            margin-bottom: 20px;
+        }
+        #questionnaire-form label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+        #questionnaire-form input, #questionnaire-form select {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 8px;
-            background-color: #f9f9f9;
+            font-size: 16px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .recommendation-item {
-            margin-bottom: 15px;
+        #questionnaire-form select:focus, #questionnaire-form input:focus {
+            border-color: #007bff;
+            outline: none;
         }
-        button {
-            display: block;
-            width: 100%;
-            padding: 10px;
+        #submit-button {
             background-color: #007bff;
             color: white;
-            font-size: 16px;
             border: none;
-            border-radius: 4px;
+            padding: 12px 25px;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 18px;
         }
-        button:hover {
+        #submit-button:hover {
             background-color: #0056b3;
+        }
+        #recommendations-list {
+            margin-top: 30px;
+            list-style-type: none;
+            padding: 0;
+        }
+        #recommendations-list li {
+            padding: 15px;
+            border: 1px solid #ccc;
+            margin: 10px auto;
+            border-radius: 10px;
+            background-color: #ffffff;
+            max-width: 500px;
+            text-align: left;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #recommendations-list li.error {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+        }
+        h1, h2 {
+            color: #007bff;
         }
     </style>
 </head>
 <body>
     <h1>Music Preferences Questionnaire</h1>
     <form id="questionnaire-form">
-        <div id="questions-container">
-            <!-- Questions will load dynamically -->
+        <div>
+            <label for="tempo">Do you prefer faster or slower tempos in your music?</label>
+            <select id="tempo" name="tempo">
+                <option value="" disabled selected>Choose an option</option>
+                <option value="slow">Slow</option>
+                <option value="fast">Fast</option>
+                <option value="both">Both</option>
+            </select>
         </div>
-        <button type="submit">Submit</button>
+        <div>
+            <label for="decade">Which decade of music do you enjoy the most?</label>
+            <input type="number" id="decade" name="decade" placeholder="e.g., 1960">
+        </div>
+        <div>
+            <label for="artist">Is there a specific artist or song title you associate with your memories?</label>
+            <input list="artist-list" id="artist" name="artist" placeholder="Start typing to filter artists">
+            <datalist id="artist-list">
+                <!-- Options will be populated dynamically -->
+            </datalist>
+        </div>
+        <button type="submit" id="submit-button">Submit</button>
     </form>
-    <h2>Song Recommendations</h2>
-    <div id="recommendations">
-        <!-- Recommendations will display dynamically -->
-    </div>
+    <h2>Music Recommendations</h2>
+    <ul id="recommendations-list"></ul>
 
     <script>
-        async function loadQuestions() {
-            try {
-                const response = await fetch("http://127.0.0.1:5000/questions");
-                const questions = await response.json();
-                const container = document.getElementById("questions-container");
+        document.addEventListener("DOMContentLoaded", async function () {
+            const artistDatalist = document.getElementById("artist-list");
 
-                questions.forEach((question) => {
-                    const questionDiv = document.createElement("div");
-                    questionDiv.className = "question";
+            // Fetch artists and populate datalist
+            async function populateArtists() {
+                try {
+                    const response = await fetch("http://127.0.0.1:5000/get-artists");
+                    const data = await response.json();
 
-                    questionDiv.innerHTML = `
-                        <label for="q${question.id}">${question.question}</label>
-                        <input type="text" id="q${question.id}" name="q${question.id}" placeholder="Your answer">
-                    `;
-
-                    container.appendChild(questionDiv);
-                });
-            } catch (error) {
-                console.error("Error loading questions:", error);
-                const container = document.getElementById("questions-container");
-                container.innerHTML = "<p>Failed to load questions. Please try again later.</p>";
-            }
-        }
-
-        async function handleSubmit(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
-
-            try {
-                const response = await fetch("http://127.0.0.1:5000/submit", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(data),
-                });
-
-                const result = await response.json();
-                const recommendationsDiv = document.getElementById("recommendations");
-                recommendationsDiv.innerHTML = "";
-
-                if (result.data.length > 0) {
-                    result.data.forEach((song) => {
-                        const div = document.createElement("div");
-                        div.className = "recommendation-item";
-                        div.innerHTML = `
-                            <p><strong>Title:</strong> ${song.title}</p>
-                            <p><strong>Artist:</strong> ${song.artist_name}</p>
-                            <p><strong>Year:</strong> ${song.year}</p>
-                            <p><strong>Tempo:</strong> ${song.tempo}</p>
-                        `;
-                        recommendationsDiv.appendChild(div);
-                    });
-                } else {
-                    recommendationsDiv.innerHTML = "<p>No recommendations found based on your preferences.</p>";
+                    if (data.artists) {
+                        // Populate datalist with artist names
+                        artistDatalist.innerHTML = ""; // Clear existing options
+                        data.artists.forEach((artist) => {
+                            const option = document.createElement("option");
+                            option.value = artist;
+                            artistDatalist.appendChild(option);
+                        });
+                    } else {
+                        console.error("No artist names available.");
+                    }
+                } catch (error) {
+                    console.error("Error fetching artist names:", error);
                 }
-            } catch (error) {
-                console.error("Error submitting form:", error);
-                recommendationsDiv.innerHTML = "<p>An error occurred while fetching recommendations. Please try again later.</p>";
             }
-        }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            loadQuestions();
-            document
-                .getElementById("questionnaire-form")
-                .addEventListener("submit", handleSubmit);
+            // Populate the datalist on page load
+            await populateArtists();
+
+            // Form submission logic
+            const form = document.getElementById("questionnaire-form");
+            const recommendationsList = document.getElementById("recommendations-list");
+
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                recommendationsList.innerHTML = "";
+
+                const tempo = document.getElementById("tempo").value;
+                const decade = document.getElementById("decade").value;
+                const artist = document.getElementById("artist").value;
+
+                try {
+                    const response = await fetch("http://127.0.0.1:5000/submit-form", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ tempo, decade, artist }),
+                    });
+
+                    const data = await response.json();
+
+                    if (data.error) {
+                        const errorItem = document.createElement("li");
+                        errorItem.textContent = data.error;
+                        errorItem.classList.add("error");
+                        recommendationsList.appendChild(errorItem);
+
+                        if (data.fallback) {
+                            data.fallback.forEach((song) => {
+                                const listItem = document.createElement("li");
+                                listItem.innerHTML = `
+                                    <strong>Title:</strong> ${song.title || "Unknown"} <br>
+                                    <strong>Artist:</strong> ${song.artist_name || "Unknown"} <br>
+                                    <strong>Tempo:</strong> ${song.tempo || "Unknown"} BPM <br>
+                                    <strong>Year:</strong> ${song.year || "Unknown"} <br>
+                                    <a href="${song.youtube_link}" target="_blank">Listen on YouTube</a>
+                                `;
+                                recommendationsList.appendChild(listItem);
+                            });
+                        }
+                        return;
+                    }
+
+                    data.data.forEach((song) => {
+                        const listItem = document.createElement("li");
+                        listItem.innerHTML = `
+                            <strong>Title:</strong> ${song.title || "Unknown"} <br>
+                            <strong>Artist:</strong> ${song.artist_name || "Unknown"} <br>
+                            <strong>Tempo:</strong> ${song.tempo || "Unknown"} BPM <br>
+                            <strong>Year:</strong> ${song.year || "Unknown"} <br>
+                            <a href="${song.youtube_link}" target="_blank">Listen on YouTube</a>
+                        `;
+                        recommendationsList.appendChild(listItem);
+                    });
+                } catch (error) {
+                    const errorItem = document.createElement("li");
+                    errorItem.textContent = "An error occurred while fetching recommendations.";
+                    errorItem.classList.add("error");
+                    recommendationsList.appendChild(errorItem);
+                    console.error("Error:", error);
+                }
+            });
         });
     </script>
 </body>

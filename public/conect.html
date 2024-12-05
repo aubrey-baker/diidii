@@ -8,8 +8,8 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <style>
-        .image-preview {
-            max-width: 200px; /* Increase the size of the image previews */
+        .media-preview {
+            max-width: 200px; /* Increase the size of the media previews */
             margin: 10px;
         }
         .file-name-input {
@@ -51,14 +51,14 @@
         </div>
 
         <div class="section" id="upload">
-            <h2>Upload Images</h2>
-            <input type="file" accept="image/*" class="btn btn-primary" id="imageUpload" multiple onchange="previewImages(event)">
-            <div id="imagePreviewContainer" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;"></div>
-            <button class="btn btn-primary" onclick="uploadImages()">
-                <i class="fas fa-image"></i> Upload Images
+            <h2>Upload Media</h2>
+            <input type="file" accept="image/*,video/*" class="btn btn-primary" id="mediaUpload" multiple onchange="previewMedia(event)">
+            <div id="mediaPreviewContainer" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;"></div>
+            <button class="btn btn-primary" onclick="uploadMedia()">
+                <i class="fas fa-upload"></i> Upload Media
             </button>
             <div class="tutorial">
-                <strong>How to Upload Images:</strong> Click the "Choose File" button, select your photos, enter file names for each, and press "Upload Images" to confirm the upload.
+                <strong>How to Upload Media:</strong> Click the "Choose File" button, select your photos or videos, enter file names for each, and press "Upload Media" to confirm the upload.
             </div>
         </div>
 
@@ -455,6 +455,92 @@
 
                     reader.readAsDataURL(file);
                 }
+            });
+        }
+
+        function previewMedia(event) {
+            const files = event.target.files;
+            const previewContainer = document.getElementById('mediaPreviewContainer');
+            previewContainer.innerHTML = ''; // Clear any existing previews
+
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    let mediaElement;
+                    if (file.type.startsWith('image/')) {
+                        mediaElement = document.createElement('img');
+                        mediaElement.src = e.target.result;
+                        mediaElement.className = 'media-preview';
+                    } else if (file.type.startsWith('video/')) {
+                        mediaElement = document.createElement('video');
+                        mediaElement.src = e.target.result;
+                        mediaElement.className = 'media-preview';
+                        mediaElement.controls = true;
+                    }
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.placeholder = 'Enter file name';
+                    input.id = `fileName_${index}`;
+                    input.className = 'file-name-input';
+
+                    const container = document.createElement('div');
+                    container.appendChild(mediaElement);
+                    container.appendChild(input);
+
+                    previewContainer.appendChild(container);
+                };
+
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function uploadMedia() {
+            const mediaUpload = document.getElementById('mediaUpload');
+            const files = mediaUpload.files;
+            const formData = new FormData();
+
+            Array.from(files).forEach((file, index) => {
+                const fileNameInput = document.getElementById(`fileName_${index}`);
+                let fileName = '';
+                const timestamp = Date.now() + index;
+                const originalExtension = file.name.split('.').pop().toLowerCase();
+                
+                if (fileNameInput && fileNameInput.value.trim()) {
+                    // Use custom name if provided
+                    fileName = fileNameInput.value.trim();
+                    // Remove special characters and file extensions
+                    fileName = fileName.replace(/[,\/\\:*?"<>|]/g, '')
+                                     .replace(/\.[^/.]+$/, '');
+                    // Add extension
+                    fileName = `${timestamp}_${fileName}.${originalExtension}`;
+                } else {
+                    // Keep original name without extension, then add timestamp
+                    const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
+                    fileName = `${timestamp}_${nameWithoutExt}.${originalExtension}`;
+                }
+
+                // Use consistent field names
+                formData.append('media', file);
+                formData.append(`fileName_${index}`, fileName);
+            });
+
+            formData.append('fileCount', files.length);
+
+            fetch('/upload-media', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(result => {
+                alert(result);
+                document.getElementById('mediaUpload').value = '';
+                document.getElementById('mediaPreviewContainer').innerHTML = '';
+            })
+            .catch(error => {
+                console.error('Error uploading media:', error);
+                alert('Failed to upload media.');
             });
         }
     </script>
