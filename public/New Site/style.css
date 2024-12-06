@@ -15,7 +15,7 @@ body{
     position: relative;
     background-size: cover;
     background-position: center;
-    height: 95vh;
+    height: 105vh;
 }
 
 .wrapper {
@@ -100,7 +100,7 @@ nav a:hover {
  .container {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 85px; /* CONTROL HEIGHT AND LAYOUT OF BOXES */
+    padding: 145px; /* CONTROL HEIGHT AND LAYOUT OF BOXES */
 }
 .section {
     background-color: #f3e5f5; /* Light purple */
@@ -167,8 +167,7 @@ nav a:hover {
         height: auto;
     }
   
-    .tutorial {
-          
+    .tutorial { 
         margin-top: 30px;
         background-color: #ffffff;
         padding: 10px;
@@ -177,7 +176,6 @@ nav a:hover {
         color: #333333;
       }
     .tutorial1 {
-          
         margin-top: 70px;
         background-color: #ffffff;
         padding: 10px;
@@ -190,11 +188,18 @@ nav a:hover {
           padding: 15px;
           border-left: 5px solid #4B0082;
           border-radius: 5px;
-          margin-bottom: 15px;
           margin: 10px;
           font-size: 1.1rem;
           color: #333333;
       }
+      .music {
+        background-color: rgb(216, 207, 255); /* Lavender */
+        border-left: 5px solid #4B0082;
+        border-radius: 5px;
+        margin: 10px;
+        font-size: 1.1rem;
+        color: #333333;
+    }
       footer {
         text-align: center;
         padding: 20px;
@@ -219,10 +224,3 @@ nav a:hover {
         }
     }
 
-
-.material-icons.md-24 { font-size: 24px;color: 
-#0000FF }
-.material-icons.md-36 { font-size: 36px;color: 
-#0000FF }
-.material-icons.md-48 { font-size: 48px;color: 
-#0000FF  }
