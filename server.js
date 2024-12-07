@@ -4,6 +4,8 @@ const path = require('path');
 const fs = require('fs');
 const session = require('express-session');
 const db = require('./database'); // Import the database module
+const { exec } = require('child_process'); // Import child_process module
+
 const app = express();
 app.use(express.json({ limit: '10mb' })); // Set limit for large images
 
@@ -136,6 +138,24 @@ app.post('/upload-audio', upload.single('audioFile'), (req, res) => {
     res.send('Audio uploaded successfully.');
 });
 
+// Route for handling media uploads
+app.post('/upload-media', upload.array('media', 10), (req, res) => {
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).send('No files were uploaded.');
+    }
+
+    // Process files
+    req.files.forEach((file, index) => {
+        const customName = req.body[`fileName_${index}`];
+        if (customName) {
+            const newPath = path.join(file.destination, customName);
+            fs.renameSync(file.path, newPath);
+        }
+    });
+
+    res.status(200).send('Media uploaded successfully');
+});
+
 // Route to fetch user-specific files
 app.get('/user-files', (req, res) => {
     const username = req.session.username;
@@ -237,8 +257,74 @@ app.use('/uploads', (req, res, next) => {
     next();
 }, express.static(uploadDir));
 
-// Start server
+// Route to get artists
+app.get('/get-artists', (req, res) => {
+    // Example: Fetch artists from the database or any other source
+    const artists = ['Artist 1', 'Artist 2', 'Artist 3'];
+    res.json({ artists });
+});
+
+// Route to handle form submission and fetch recommendations
+app.post('/submit-form', (req, res) => {
+    const { tempo, decade, artist } = req.body;
+
+    // Example: Fetch recommendations based on the provided data
+    const recommendations = [
+        {
+            title: 'Song 1',
+            artist_name: 'Artist 1',
+            tempo: 'Fast',
+            year: '1980',
+            youtube_recommendations: [
+                { youtube_link: 'https://www.youtube.com/watch?v=example1', video_title: 'Example Video 1' }
+            ]
+        },
+        {
+            title: 'Song 2',
+            artist_name: 'Artist 2',
+            tempo: 'Slow',
+            year: '1990',
+            youtube_recommendations: [
+                { youtube_link: 'https://www.youtube.com/watch?v=example2', video_title: 'Example Video 2' }
+            ]
+        }
+    ];
+
+    res.json({ data: recommendations });
+});
+
+// Function to install Python packages and run Python scripts
+function setupPythonEnvironment() {
+    exec('pip install -r requirements.txt', (err, stdout, stderr) => {
+        if (err) {
+            console.error(`Error installing Python packages: ${stderr}`);
+            return;
+        }
+        console.log(`Python packages installed: ${stdout}`);
+
+        // Run All_access_keys.py
+        exec('python All_access_keys.py', (err, stdout, stderr) => {
+            if (err) {
+                console.error(`Error running All_access_keys.py: ${stderr}`);
+                return;
+            }
+            console.log(`All_access_keys.py output: ${stdout}`);
+
+            // Run Llama.py
+            exec('python Llama.py', (err, stdout, stderr) => {
+                if (err) {
+                    console.error(`Error running Llama.py: ${stderr}`);
+                    return;
+                }
+                console.log(`Llama.py output: ${stdout}`);
+            });
+        });
+    });
+}
+
+// Start server and setup Python environment
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
+    setupPythonEnvironment(); // Setup Python environment when server starts
 });
