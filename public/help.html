@@ -54,6 +54,16 @@
             .then(response => response.text())
             .then(data => {
                 document.getElementById('navbar').innerHTML = data;
+
+                // Check if the user is logged in and display the profile badge
+                fetch('/check-login')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.loggedIn) {
+                            document.getElementById('usernameDisplay').textContent = data.username;
+                            document.getElementById('profileBadge').style.display = 'block';
+                        }
+                    });
             });
     </script>
 </body>

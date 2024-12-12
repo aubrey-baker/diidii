@@ -81,19 +81,20 @@ const upload = multer({ storage: storage });
 
 // Route for handling image uploads from "Upload Images" section
 app.post('/upload-images', upload.array('images', 10), (req, res) => {
-    const fileCount = req.body.fileCount;
-    
-    if (!req.files || req.files.length === 0) {
+    if (!req.files) {
         return res.status(400).send('No files were uploaded.');
     }
 
-    // Process files
-    req.files.forEach((file, index) => {
-        const customName = req.body[`fileName_${index}`];
-        if (customName) {
-            const newPath = path.join(file.destination, customName);
-            fs.renameSync(file.path, newPath);
-        }
+    const userId = req.session.userId;
+
+    req.files.forEach((file) => {
+        const filePath = path.join(file.destination, file.filename);
+        db.run('INSERT INTO files (user_id, filename, filetype, filepath) VALUES (?, ?, ?, ?)', [userId, file.filename, file.mimetype, filePath], (err) => {
+            if (err) {
+                console.error('Error inserting file into database:', err);
+                return res.status(500).send('Error saving file metadata');
+            }
+        });
     });
 
     res.status(200).send('Images uploaded successfully');
@@ -140,17 +141,21 @@ app.post('/upload-audio', upload.single('audioFile'), (req, res) => {
 
 // Route for handling media uploads
 app.post('/upload-media', upload.array('media', 10), (req, res) => {
-    if (!req.files || req.files.length === 0) {
-        return res.status(400).send('No files were uploaded.');
+    if (!req.files) {
+        return res.status(400).send('No media files were uploaded.');
     }
 
-    // Process files
-    req.files.forEach((file, index) => {
-        const customName = req.body[`fileName_${index}`];
-        if (customName) {
-            const newPath = path.join(file.destination, customName);
-            fs.renameSync(file.path, newPath);
-        }
+    const userId = req.session.userId;
+
+    req.files.forEach((file) => {
+        const filePath = path.join(file.destination, file.filename);
+        const fileType = file.mimetype.startsWith('image/') ? 'image' : 'video';
+        db.run('INSERT INTO files (user_id, filename, filetype, filepath) VALUES (?, ?, ?, ?)', [userId, file.filename, fileType, filePath], (err) => {
+            if (err) {
+                console.error('Error inserting media into database:', err);
+                return res.status(500).send('Error saving media metadata');
+            }
+        });
     });
 
     res.status(200).send('Media uploaded successfully');
@@ -192,6 +197,7 @@ app.post('/login', (req, res) => {
 
         if (row) {
             req.session.username = username; // Store username in session
+            req.session.userId = row.id; // Store user ID in session
             res.status(200).send('Login successful');
         } else {
             res.status(401).send('Invalid username or password');
@@ -323,7 +329,7 @@ function setupPythonEnvironment() {
 }
 
 // Start server and setup Python environment
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4006;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
     setupPythonEnvironment(); // Setup Python environment when server starts

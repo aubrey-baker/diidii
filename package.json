@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "engines": {
-    "node": "10.19.0"
+    "node": "22.12.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -14,16 +14,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-<<<<<<< Updated upstream
     "express": "^4.21.1",
-    "express-session": "^1.18.1",
+    "express-session": "^1.17.3",
     "multer": "^1.4.5-lts.1",
-    "sqlite3": "^5.1.7"
-=======
-    "express": "4.17.1",
-    "express-session": "1.17.1",
-    "multer": "1.4.2",
-    "sqlite3": "4.1.1"
->>>>>>> Stashed changes
+    "sqlite3": "^5.0.2"
   }
 }
