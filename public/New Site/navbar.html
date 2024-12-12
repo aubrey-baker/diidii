@@ -1,0 +1,50 @@
+<div class="topnav">
+    <header>
+        <div class="wrapper">
+            <div class="logo">
+                <div id="logo-img">
+                    <img src="logo_square-removebg-preview.png" alt="Logo">
+                </div>
+            </div>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="help.html">Help</a>
+                <a href="conect.html">Upload</a>
+                <a href="memories.html">Memories</a>
+                <a href="Llama.html">Music</a> 
+                <a href="login.html">Login</a>
+                <a href="#" id="logout" style="display: none;">Sign Out</a>
+            </nav>
+            <div class="profile-badge" id="profileBadge" style="display: none;">
+                Logged in as <span id="usernameDisplay"></span>
+            </div>
+        </div>
+    </header>
+</div>
+
+<script>
+    document.getElementById('logout').addEventListener('click', async () => {
+        const response = await fetch('/logout', {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            alert('Logout successful!');
+            window.location.href = 'login.html';
+        } else {
+            alert('Failed to log out.');
+        }
+    });
+
+    // Check if the user is logged in and display the profile badge
+    fetch('/check-login')
+        .then(response => response.json())
+        .then(data => {
+            if (data.loggedIn) {
+                document.getElementById('usernameDisplay').textContent = data.username;
+                document.getElementById('profileBadge').style.display = 'block';
+                document.getElementById('logout').style.display = 'block';
+                document.querySelector('nav a[href="login.html"]').style.display = 'none';
+            }
+        });
+</script>
