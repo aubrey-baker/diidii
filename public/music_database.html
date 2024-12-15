@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diidii Caregiver Support - Music Therapy</title>
+    <style>
+        /* Base styles */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #f0f8ff, #e6e6fa);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #6200EA;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .nav {
+            background-color: #4B0082;
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1.2rem;
+            transition: opacity 0.3s;
+        }
+
+        .nav a:hover {
+            opacity: 0.8;
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Search Form */
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-form input,
+        .search-form select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .search-form input {
+            flex: 1;
+        }
+
+        .search-form button {
+            padding: 12px 24px;
+            background: #6200EA;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-form button:hover {
+            background: #4B0082;
+        }
+
+        /* Loading Animation */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .loading:after {
+            content: "...";
+            animation: dots 1s steps(5, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ""; }
+            40% { content: "."; }
+            60% { content: ".."; }
+            80%, 100% { content: "..."; }
+        }
+
+        /* Mood Playlists */
+        .mood-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .mood-button {
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #6200EA, #B388FF);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .mood-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Song Cards */
+        .song-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .song-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .song-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .song-card img {
+            width: 100%;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .song-card h4 {
+            margin: 10px 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .song-card p {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .song-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .song-controls button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        /* Playlists */
+        .playlist-section {
+            margin-top: 30px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .playlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .playlist-songs {
+            margin-top: 15px;
+        }
+
+        .playlist-song {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Recently Played */
+        .recently-played {
+            margin-top: 30px;
+        }
+
+        .recently-played-grid {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .recently-played-item {
+            flex: 0 0 200px;
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: all 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .nav {
+                flex-direction: column;
+                padding: 5px 0;
+            }
+
+            .nav a {
+                margin: 5px 0;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .song-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mood-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .recently-played-item {
+                flex: 0 0 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Diidii Caregiver Support</h1>
+        <p>Empowering caregivers with tools and resources for dementia care</p>
+    </div>
+
+    <div class="nav">
+        <a href="#reminiscence">Reminiscence Therapy</a>
+        <a href="#music">Music Therapy</a>
+        <a href="#communication">Communication Tools</a>
+        <a href="#resources">Resources</a>
+    </div>
+
+    <div class="main">
+        <div class="section" id="music">
+            <h2>Music Therapy</h2>
+            
+            <!-- Search Form -->
+            <form id="searchForm" class="search-form" onsubmit="handleSearch(event)">
+                <input 
+                    type="text" 
+                    id="songSearch" 
+                    placeholder="Search for any song, artist, or genre..."
+                    required
+                >
+                <select id="moodFilter">
+                    <option value="">All Moods</option>
+                    <option value="upbeat">Upbeat</option>
+                    <option value="calm">Calm</option>
+                    <option value="nostalgic">Nostalgic</option>
+                </select>
+                <button type="submit">Search</button>
+            </form>
+
+            <!-- Mood-Based Playlists -->
+            <div class="mood-playlists">
+                <h3>Quick Mood Playlists</h3>
+                <div class="mood-buttons">
+                    <button onclick="createMoodPlaylist('Morning Care')" class="mood-button">
+                        Morning Care
+                    </button>
+                    <button onclick="createMoodPlaylist('Relaxation')" class="mood-button">
+                        Relaxation
+                    </button>
+                    <button onclick="createMoodPlaylist('Memory Lane')" class="mood-button">
+                        Memory Lane
+                    </button>
+                    <button onclick="createMoodPlaylist('Evening Wind Down')" class="mood-button">
+                        Evening Wind Down
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div id="searchResults" class="song-grid"></div>
+
+            <!-- Recommendations -->
+            <div id="recommendations"></div>
+
+            <!-- Playlists -->
+            <div class="playlist-section">
+                <div class="playlist-header">
+                    <h3>Your Playlists</h3>
+                    <button onclick="createNewPlaylist()">Create New Playlist</button>
+                </div>
+                <div id="playlistContainer"></div>
+            </div>
+
+            <!-- Recently Played -->
+            <div class="recently-played">
+                <h3>Recently Played</h3>
+                <div id="recentlyPlayedContainer" class="recently-played-grid"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Configuration
+        const API_KEY = 'AIzaSyDvfDh3m3q39-6kQTMwyDp0GNqczSFQkhI';
+        let recentlyPlayed = [];
+        let currentPlaylist = null;
+
+        // Music Database Class
+        class MusicDatabase {
+            constructor() {
+                this.songs = new Map();
+                this.playlists = new Map();
+                this.moodProfiles = {
+                    'Morning Care': {
+                        keywords: ['cheerful', 'upbeat', 'morning', '1950s', '1960s'],
+                        mood: 'energetic'
+                    },
+                    'Relaxation': {
+                        keywords: ['relaxing', 'calm', 'peaceful', 'soft'],
+                        mood: 'calm'
+                    },
+                    'Memory Lane': {
+                        keywords: ['1940s', '1950s', 'oldies', 'classic'],
+                        mood: 'nostalgic'
+                    },
+                    'Evening Wind Down': {
+                        keywords: ['soft', 'gentle', 'soothing', 'bedtime'],
+                        mood: 'peaceful'
+                    }
+                };
+            }
+
+            async searchYouTube(query) {
+                try {
+                    const response = await fetch(
+                        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=20&key=${API_KEY}`
+                    );
+                    const data = await response.json();
+                    return data.items || [];
+                } catch (error) {
+                    console.error('YouTube search error:', error);
+                    throw error;
+                }
+            }
+
+            async getMoodBasedSongs(mood) {
+                const profile = this.moodProfiles[mood];
+                if (!profile) return [];
+
+                const queries = profile.keywords.map(keyword => 
+                    this.searchYouTube(`${keyword} music`)
+                );
+
+                try {
+                    const results = await Promise.all(queries);
+                    const songs = results.flat().slice(0, 10);
+                    return this.shuffleArray(songs);
+                } catch (error) {
+                    console.error('Mood playlist error:', error);
+                    return [];
+                }
+            }
+
+            shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+        }
+
+        // Initialize database
+        const musicDB = new MusicDatabase();
+
+        // Event Handlers
+        async function handleSearch(event) {
+            event.preventDefault();
+            
+            const query = document.getElementById('songSearch').value;
+            const moodFilter = document.getElementById('moodFilter').value;
+            
+            // Show loading state
+            const searchResults = document.getElementById('searchResults');
+            searchResults.innerHTML = '<div class="loading">Searching songs...</div>';
+
+            try {
+                const results = await musicDB.searchYouTube(
+                    moodFilter ? `${query} ${moodFilter} music` : `${query} music`
+                );
+                displaySearchResults(results);
+            } catch (error) {
+                showToast('Error searching songs. Please try again.');
+                searchResults.innerHTML = '<p>Error searching songs. Please try again.</p>';
+            }
+        }
+
+        function displaySearchResults(videos) {
+            const container = document.getElementById('searchResults');
+            
+            if (!videos.length) {
+                container.innerHTML = '<p>No songs found. Try a different search.</p>';
+                return;
+            }
+
+            container.innerHTML = videos.map(video => `
+                <div class="song-card">
+                    <img src="${video.snippet.thumbnails.medium.url}" alt="${video.snippet.title}">
+                    <h4>${video.snippet.title}</h4>
+                    <p>${video.snippet.channelTitle}</p>
+                    <div class="song-controls">
+                        <button onclick="playVideo('${video.id.videoId}', '${encodeURIComponent(video.snippet.title)}', '${encodeURIComponent(video.snippet.channelTitle)}')">
+                            Play
+                        </button>
+                        <button onclick="addToPlaylist('${video.id.videoId}', '${encodeURIComponent(video.snippet.title)}', '${encodeURIComponent(video.snippet.channelTitle)}')">
+                            Add to Playlist
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function createMoodPlaylist(mood) {
+            try {
+                const songs = await musicDB.getMoodBasedSongs(mood);
+                displayPlaylist({
+                    name: `${mood} Playlist`,
+                    songs: songs
+                });
+                showToast(`Created ${mood} playlist!`);
+            } catch (error) {
+                showToast('Error creating playlist. Please try again.');
+            }
+        }
+
+        function displayPlaylist(playlist) {
+            const container = document.getElementById('playlistContainer');
+            currentPlaylist = playlist;
+            
+            container.innerHTML = `
+                <div class="playlist-card">
+                    <h4>${playlist.name}</h4>
+                    <div class="playlist-songs">
+                        ${playlist.songs.map((video, index) => `
+                            <div class="playlist-song">
+                                <span>${index + 1}. ${video.snippet.title}</span>
+                                <div class="song-controls">
+                                    <button onclick="playVideo('${video.id.videoId}', '${encodeURIComponent(video.snippet.title)}', '${encodeURIComponent(video.snippet.channelTitle)}')">
+                                        Play
+                                    </button>
+                                    <button onclick="removeFromPlaylist(${index})">
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function playVideo(videoId, encodedTitle, encodedChannelTitle) {
+            const title = decodeURIComponent(encodedTitle);
+            const channelTitle = decodeURIComponent(encodedChannelTitle);
+
+            // Add to recently played
+            addToRecentlyPlayed({
+                id: videoId,
+                title: title,
+                artist: channelTitle
+            });
+
+            // Open YouTube
+            window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+        }
+
+        function addToRecentlyPlayed(song) {
+            recentlyPlayed = [song, ...recentlyPlayed.filter(s => s.id !== song.id)].slice(0, 5);
+            updateRecentlyPlayed();
+        }
+
+        function updateRecentlyPlayed() {
+            const container = document.getElementById('recentlyPlayedContainer');
+            container.innerHTML = recentlyPlayed.map(song => `
+                <div class="recently-played-item">
+                    <img src="https://img.youtube.com/vi/${song.id}/mqdefault.jpg" alt="${song.title}">
+                    <p>${song.title}</p>
+                    <p>${song.artist}</p>
+                    <button onclick="playVideo('${song.id}', '${encodeURIComponent(song.title)}', '${encodeURIComponent(song.artist)}')">
+                        Play Again
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function createNewPlaylist() {
+            const name = prompt('Enter playlist name:');
+            if (name) {
+                displayPlaylist({
+                    name: name,
+                    songs: []
+                });
+                showToast('Created new playlist!');
+            }
+        }
+
+        function addToPlaylist(videoId, encodedTitle, encodedChannelTitle) {
+            if (!currentPlaylist) {
+                createNewPlaylist();
+            }
+            
+            if (currentPlaylist) {
+                const title = decodeURIComponent(encodedTitle);
+                const channelTitle = decodeURIComponent(encodedChannelTitle);
+                
+                currentPlaylist.songs.push({
+                    id: { videoId },
+                    snippet: {
+                        title: title,
+                        channelTitle: channelTitle
+                    }
+                });
+                
+                displayPlaylist(currentPlaylist);
+                showToast('Added to playlist!');
+            }
+        }
+
+        function removeFromPlaylist(index) {
+            if (currentPlaylist && currentPlaylist.songs) {
+                currentPlaylist.songs.splice(index, 1);
+                displayPlaylist(currentPlaylist);
+                showToast('Removed from playlist');
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 2000);
+            }, 100);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateRecentlyPlayed();
+        });
+    </script>
+</body>
+</html>
